@@ -1,0 +1,40 @@
+ little doc
+
+things i need to research:
+instantiation of objects (maybe its just scene.add), hit detection(trancing, bulletspawn),
+events and or colision, possibly text actually
+
+juice ideas:
+impulse reaction of a duck getting hit, the other ducks get tiltet away from the impact point, curtains move
+particles, ofc. satisfying hit sounds, woow and ooh sounds(could be annoying).
+quack sounds, water splashes
+
+tinted Ducks that give special effects when hit. could be highlighted with a gasp sound on spawn
+and point lights highlighting it. confetti when hit, like a proper circus
+Homing bullets, bullet refill, inifite bullets
+
+BIG Bullets (would require slower ducks that have multiple targets(and more HP) where all targets need to be hit)
+environment interaction. Everytime player shoots tent in the back it moves(along with curtains).
+Player shoots curtain 5 times, it falls down. Another color appears.
+can repeat 3 times, after blue comes red then green after that the wood wall.
+That one will move lightly whenever it is hit
+
+
+ standard crosshair that is moved with the mouse and the camera (or the objects)
+are slightly moving depending on the position of the cursor
+
+
+stage 1 tutorial
+    dimmed background highlighting a single duck. With a message "click to shoot"/"can you hit the duck?"
+    *player shoots*
+    -> hits duck: confetti, lights turn on, normal game starts
+    -> doesnt hit duck: ???
+stage 2 game loop
+
+
+
+todo:
+
+hit reactions
+save score
+animation
