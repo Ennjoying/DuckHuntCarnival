@@ -31,10 +31,11 @@ stage 1 tutorial
     -> doesnt hit duck: ???
 stage 2 game loop
 
+Todo:
+UI
+point indicator, Ammo indicator, Rifle, crosshair
+sounds: music, shoteffects, duckquack
 
-
-todo:
-
-hit reactions
-save score
-animation
+Juice: Remove the Trees and other Targets from the blender scene,
+add them in manually and give them hitReactions
+add clouds that fall down when shot (new gsap.to)

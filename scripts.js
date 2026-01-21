@@ -1,23 +1,25 @@
 import * as THREE from "three";
 import GUI from "lil-gui";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import Funcs from "./Classes/FunctionLibrary.js";
-import SceneInit from "./Classes/SceneInitializer.js";
+import AnimManager from "./Classes/AnimManager.js";
+import GameManager from "./Classes/GameManager.js";
+import SpawnManager from "./Classes/SpawnManager.js";
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 // #region Projectsetup, Inputs
-
 //#region basic Projectsetup
 
 const clock = new THREE.Clock();
 
-const sceneInit = new SceneInit();
-sceneInit.Init();
-const scene = sceneInit.scene;
-const funcs = new Funcs();
+const gameManager = new GameManager();
+gameManager.initGameScene();
+const animator = new AnimManager();
+const spawner = new SpawnManager();
+spawner.initReferences(animator, gameManager.scene, gameManager);
 // #endregion
 
 // #region Inputs
 
-//const inputs = new OrbitControls(camera, canvas);
+const inputs = new OrbitControls(gameManager.camera, gameManager.canvas);
 //inputs.minPolarAngle = Math.PI * 0.4
 //inputs.maxPolarAngle = Math.PI * 0.6
 //inputs.enableDamping = true
@@ -31,8 +33,11 @@ window.addEventListener("mousemove", (event) => {
 });
 
 window.addEventListener("click", () => {
-  rayCaster.setFromCamera(mousePos, sceneInit.camera);
-  const intersectedObj = rayCaster.intersectObjects(scene.children, true);
+  rayCaster.setFromCamera(mousePos, gameManager.camera);
+  const intersectedObj = rayCaster.intersectObjects(
+    gameManager.scene.children,
+    true,
+  );
   let hitObj;
   let hitMesh;
 
@@ -78,19 +83,6 @@ window.addEventListener("click", () => {
 
 //declare objects that will be loaded
 let gltfObjsLoaded = false;
-let wave1;
-let wave2;
-let wave3;
-let DuckYellow1;
-let DuckYellow2;
-let standWood1;
-let standWood2;
-let standWoodBroken;
-let standMetal;
-let standMetalBroken;
-
-let TargetDuckYellow1 = new THREE.Group();
-const TargetDuckYellow2 = new THREE.Group();
 
 //loaders
 const loadManager = new THREE.LoadingManager();
@@ -101,44 +93,44 @@ const texLoader = new THREE.TextureLoader(loadManager);
 const gltfLoader = new GLTFLoader(loadManager);
 
 gltfLoader.load("/models/StaticMeshesLightsCamera.gltf", (gltf) => {
-  scene.add(gltf.scene);
+  gameManager.scene.add(gltf.scene);
 });
 gltfLoader.load("/models/TargetsHudMovableAssets.gltf", (gltf) => {
   //assign Meshes
-  wave1 = gltf.scene.getObjectByName("waves001");
-  wave2 = gltf.scene.getObjectByName("waves002");
-  wave3 = wave1.clone();
-  DuckYellow1 = gltf.scene.getObjectByName("TargetDuckYellow005");
-  DuckYellow2 = gltf.scene.getObjectByName("TargetDuckYellow006");
-  standWood1 = gltf.scene.getObjectByName("StandWood003");
-  standWood2 = gltf.scene.getObjectByName("StandWood004");
-  standWoodBroken = gltf.scene.getObjectByName("StandWoodHit002");
-  standMetal = gltf.scene.getObjectByName("StandMetal001");
-  standMetalBroken = gltf.scene.getObjectByName("StandMetalHit002");
-  standWood1.position.set(-0.1, -1.95, -0.1);
-  standWood2.position.set(-0.1, -1.95, -0.1);
-  standMetal.position.set(-0.1, -1.95, -0.1);
-  standWoodBroken.position.set(-0.1, -1.95, -0.1);
-  standMetalBroken.position.set(-0.1, -1.95, -0.1);
-
-  //Assign Meshes to targetGroups
-  TargetDuckYellow1.add(DuckYellow1);
-  TargetDuckYellow1.add(standWood1);
-  TargetDuckYellow2.add(DuckYellow2);
-  TargetDuckYellow2.add(standMetal);
+  console.log(gltf);
+  spawner.wave1 = gltf.scene.getObjectByName("waves001");
+  spawner.wave2 = gltf.scene.getObjectByName("waves002");
+  spawner.wave3 = spawner.wave1.clone();
+  gltf.scene.getObjectByName("StandWood003").position.set(-0.1, -1.95, -0.1);
+  gltf.scene.getObjectByName("StandWood004").position.set(-0.1, -1.95, -0.1);
+  gltf.scene.getObjectByName("StandMetal001").position.set(-0.1, -1.95, -0.1);
+  gltf.scene.getObjectByName("StandWoodHit002").position.set(-0.1, -1.95, -0.1);
+  gltf.scene
+    .getObjectByName("StandMetalHit002")
+    .position.set(-0.1, -1.95, -0.1);
+  spawner.targetDucks.push(
+    gltf.scene.getObjectByName("TargetDuckYellow005"),
+    gltf.scene.getObjectByName("TargetDuckYellow006"),
+    gltf.scene.getObjectByName("TargetDuckBrown005"),
+    gltf.scene.getObjectByName("TargetDuckBrown006"),
+    gltf.scene.getObjectByName("TargetDuckBeige005"),
+    gltf.scene.getObjectByName("TargetDuckBeige006"),
+  );
+  spawner.targetStands.push(
+    gltf.scene.getObjectByName("StandWood003"),
+    gltf.scene.getObjectByName("StandWood004"),
+    gltf.scene.getObjectByName("StandMetal001"),
+  );
   //add Meshes
-  scene.add(wave1);
-  scene.add(wave2);
-  scene.add(wave3);
+  gameManager.scene.add(spawner.wave1);
+  gameManager.scene.add(spawner.wave2);
+  gameManager.scene.add(spawner.wave3);
+
+  gameManager.sceneHud.add(gltf.scene.children[0]);
+  console.log(gameManager.sceneHud);
 
   gltfObjsLoaded = true;
 });
-
-// #endregion
-// #region hud
-function addHudOnLoad(gltf) {
-  //crosshair = gltf.scene.children[0];
-}
 
 // #endregion
 
@@ -156,9 +148,6 @@ window.addEventListener("keydown", (event) => {
   if (event.key == "h") gui.show(gui._hidden);
 });
 
-const debugVars = {};
-
-const guiFolderWaves = gui.addFolder("waves");
 const wavePos = {
   wave1x: 15,
   wave1y: -2.25,
@@ -178,33 +167,27 @@ const eventTick = () => {
   //object updates
   if (gltfObjsLoaded) {
     //Animate
-    wave1.position.set(
+    spawner.wave1.position.set(
       wavePos.wave1x + Math.sin(elapsedTime * 0.6),
       wavePos.wave1y + Math.sin(elapsedTime * 0.6) * 0.1,
       Math.sin(elapsedTime * 0.6) * 0.1,
     );
-    wave2.position.set(
+    spawner.wave2.position.set(
       wavePos.wave2x - Math.sin(elapsedTime * 0.8),
       wavePos.wave2y + Math.sin(elapsedTime * 0.8) * 0.1,
       1 + Math.sin(elapsedTime * 0.8) * 0.1,
     );
-    wave3.position.set(
+    spawner.wave3.position.set(
       wavePos.wave3x + Math.sin(elapsedTime),
       wavePos.wave3y + Math.sin(elapsedTime) * 0.1,
       2 + Math.sin(elapsedTime) * 0.1,
     );
-
-    if (!funcs.hittableObjects.length > 0) {
-      const newTarget = funcs.instantiateShootingTarget(TargetDuckYellow1);
-      scene.add(newTarget);
-      funcs.hittableObjects.push(newTarget);
-      funcs.animSwim(newTarget);
-      console.log(funcs.hittableObjects);
-    }
+    spawner.decideSpawn();
   }
 
   elapsedTime > 100 ? (elapsedTime = 0) : null;
-  sceneInit.renderer.render(scene, sceneInit.camera);
+  gameManager.renderer.render(gameManager.scene, gameManager.camera);
+  gameManager.renderer.render(gameManager.sceneHud, gameManager.cameraHud);
   window.requestAnimationFrame(eventTick);
 };
 eventTick();
