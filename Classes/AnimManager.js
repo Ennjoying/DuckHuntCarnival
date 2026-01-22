@@ -25,6 +25,25 @@ export default class AnimManager {
     " ",
   ];
 
+  animTutorialDuck(target) {
+    gsap.to(target.rotation, {
+      delay: 2,
+      duration: 1,
+      y: Math.PI * 2,
+      yoyo: true,
+      repeat: -1,
+      repeatDelay: 3,
+    });
+  }
+  animTutorialStand(stand, onCompleteFunc) {
+    gsap.to(stand.position, {
+      y: -6,
+      duration: 2,
+      ease: "elastic.in",
+      onComplete: () => onCompleteFunc(),
+    });
+  }
+
   animSwim(target, fromPos, toPos, onCompleteFunc) {
     const tl = gsap.timeline();
     if (Math.random() >= 0.5) {
@@ -34,7 +53,10 @@ export default class AnimManager {
         y: toPos.y,
         z: toPos.z,
         ease: gsap.utils.random(this.gsapEases),
-        onComplete: () => onCompleteFunc(target),
+        onComplete: () => {
+          onCompleteFunc(target);
+          tl.kill();
+        },
       });
     } else {
       target.scale.x = -1;
@@ -47,7 +69,10 @@ export default class AnimManager {
           y: toPos.y,
           z: toPos.z,
           ease: gsap.utils.random(this.gsapEases),
-          onComplete: () => onCompleteFunc(target),
+          onComplete: () => {
+            onCompleteFunc(target);
+            tl.kill();
+          },
         },
       );
     }
@@ -81,6 +106,7 @@ export default class AnimManager {
   }
 
   animHitTarget(shotTarget, hitOnRightSide, onCompleteFunc) {
+    gsap.killTweensOf(shotTarget);
     if (hitOnRightSide)
       gsap.to(shotTarget.rotation, {
         y: Math.PI * 4,
@@ -93,5 +119,26 @@ export default class AnimManager {
         duration: 0.5,
         onComplete: () => onCompleteFunc(shotTarget),
       });
+  }
+
+  animHudBlinkingBullets(bulletDiv) {
+    gsap.to(bulletDiv.style.opacity, {
+      opacity: 0,
+      duration: 0.5,
+      yoyo: true,
+      repeat: 3,
+    });
+  }
+
+  rifle = document.querySelector("div.rifle");
+  animHudRifleShot(rifle) {
+    console.log(rifle);
+    gsap.to(rifle, {
+      rotate: 30 + "deg",
+      left: "+=3%",
+      duration: 0.1,
+      yoyo: true,
+      repeat: 1,
+    });
   }
 }

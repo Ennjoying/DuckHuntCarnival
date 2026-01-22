@@ -1,14 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <link rel="stylesheet" href="./style.css">
+  <head>
+    <link rel="stylesheet" href="./style.css" />
     <script type="module" src="./scripts.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Duck Hunt Carnival</title>
-</head>
-<body>
+  </head>
+  <body>
     <canvas class="viewport"></canvas>
-    <canvas class="Hud"></canvas>
-</body>
+    <div class="ui">
+      <div class="cursor">
+        <img
+          src="/kenney_shooting-gallery/PNG/HUD/crosshair_outline_large.png"
+        />
+      </div>
+      <div class="rifle">
+        <img src="/kenney_shooting-gallery/PNG/Objects/rifle.png" />
+      </div>
+      <div class="score">
+        <div class="scoreText">Score: 0</div>
+      </div>
+      <div class="bullets" id="bullets">
+        <img
+          class="bullet bullet3"
+          src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
+        />
+
+        <img
+          class="bullet bullet2"
+          src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
+        />
+        <img
+          class="bullet bullet1"
+          src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
+        />
+      </div>
+    </div>
+  </body>
 </html>

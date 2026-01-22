@@ -11,14 +11,34 @@ export default class SpawnManager {
   wave3;
   targetDucks = [];
   targetStands = [];
-
-  initReferences(animator, scene, gameManager) {
+  constructor(animator, scene, gameManager) {
     this.animator = animator;
     this.scene = scene;
     this.hittableObjects = [];
     this.gameManager = gameManager;
   }
 
+  tutorialDuck = null;
+  //#region tutorial animations
+  instantiateTutorialDuck() {
+    this.tutorialDuck = this.instantiate(
+      this.randomizeTarget(),
+      new THREE.Vector3(0, 0, 0.5),
+    );
+    this.tutorialDuck.children[0].hitReaction = (target, rightHit) => {
+      this.animator.animHitTarget(target, rightHit, this.hitTarget.bind(this));
+      this.animator.animTutorialStand(
+        this.tutorialDuck.children[1],
+        this.gameManager.endTutorial.bind(this.gameManager),
+      );
+    };
+
+    this.scene.add(this.tutorialDuck);
+    this.hittableObjects.push(this.tutorialDuck);
+    this.animator.animTutorialDuck(this.tutorialDuck);
+  }
+
+  //#endregion
   spawnCooldown = false;
   //#region decisionlogic
   decideSpawn() {
@@ -44,23 +64,19 @@ export default class SpawnManager {
   instantiateShootingTarget(obj, position, scale, rotation) {
     const objCopy = this.instantiate(obj, position, scale, rotation);
     objCopy.children[0].hitReaction = (target, rightHit) =>
-      this.animator.animHitTarget(
-        target,
-        rightHit,
-        this.killedTarget.bind(this),
-      );
+      this.animator.animHitTarget(target, rightHit, this.hitTarget.bind(this));
     this.scene.add(objCopy);
     this.hittableObjects.push(objCopy);
     // 2.5, 1.5, 0.5 , -0.5
     const zValue = Math.floor(Math.random() * 4) - 0.5;
     this.animator.animSwim(
       objCopy,
-      new THREE.Vector3(-10, 1, zValue),
-      new THREE.Vector3(10, -1.5, zValue),
+      new THREE.Vector3(-10, Math.random() * 2 - 2, zValue),
+      new THREE.Vector3(10, Math.random() * 2 - 1.5, zValue),
       this.despawnTarget.bind(this),
     );
-    return objCopy;
   }
+
   instantiateBackgroundTarget(obj, position, scale, rotation) {
     const objCopy = this.instantiate(obj, position, scale, rotation);
     objCopy.traverse((copy) => {
@@ -81,13 +97,13 @@ export default class SpawnManager {
         Math.floor(Math.random() * this.targetStands.length)
       ].clone(),
     );
-
+    target.scale.set(0.75, 0.75, 0.75);
     return target;
   }
   // #endregion
 
   //#region remove objects
-  killedTarget(shotTarget) {
+  hitTarget(shotTarget) {
     shotTarget.parent.remove(shotTarget);
     this.gameManager.gainPoints(10);
   }

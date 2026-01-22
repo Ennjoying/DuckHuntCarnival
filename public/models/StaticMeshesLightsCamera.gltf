@@ -381,8 +381,8 @@
 				0.5000000596046448
 			],
 			"translation":[
-				-6.155516624450684,
-				-2.3215668201446533,
+				-9.522706985473633,
+				-2.6016342639923096,
 				4.456234455108643
 			]
 		},
@@ -411,7 +411,7 @@
 			],
 			"translation":[
 				-12.440332412719727,
-				-2.3141591548919678,
+				-2.740985870361328,
 				3.438107490539551
 			]
 		},
@@ -1266,35 +1266,35 @@
 		{
 			"bufferView":49,
 			"componentType":5126,
-			"count":12,
+			"count":24,
 			"max":[
-				1.1130928993225098,
-				2.458006242989086e-08,
-				3.077254295349121
+				1.3899362087249756,
+				8.191283740188737e-08,
+				1.765633225440979
 			],
 			"min":[
-				-1.1130928993225098,
-				-2.458006242989086e-08,
-				-15.386271476745605
+				-1.1130930185317993,
+				-8.191283740188737e-08,
+				-19.421964645385742
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":50,
 			"componentType":5126,
-			"count":12,
+			"count":24,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":51,
 			"componentType":5126,
-			"count":12,
+			"count":24,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":52,
 			"componentType":5123,
-			"count":18,
+			"count":36,
 			"type":"SCALAR"
 		},
 		{
@@ -1623,44 +1623,44 @@
 		},
 		{
 			"buffer":0,
-			"byteLength":144,
+			"byteLength":288,
 			"byteOffset":27300,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":144,
-			"byteOffset":27444,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":96,
+			"byteLength":288,
 			"byteOffset":27588,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":36,
-			"byteOffset":27684,
+			"byteLength":192,
+			"byteOffset":27876,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":72,
+			"byteOffset":28068,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":960,
-			"byteOffset":27720,
+			"byteOffset":28140,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":960,
-			"byteOffset":28680,
+			"byteOffset":29100,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":640,
-			"byteOffset":29640,
+			"byteOffset":30060,
 			"target":34962
 		}
 	],
@@ -1672,7 +1672,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":30280,
+			"byteLength":30700,
 			"uri":"StaticMeshesLightsCamera.bin"
 		}
 	]

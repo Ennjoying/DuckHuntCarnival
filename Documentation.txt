@@ -32,10 +32,14 @@ stage 1 tutorial
 stage 2 game loop
 
 Todo:
-UI
-point indicator, Ammo indicator, Rifle, crosshair
-sounds: music, shoteffects, duckquack
+juice!
 
-Juice: Remove the Trees and other Targets from the blender scene,
+
+
+Juice: 
+sounds: music, shoteffects, duckquack
+particle effects: konfetti when hitting duck
+more light effects: lights that focus the ducks 
+Remove the Trees and other Targets from the blender scene,
 add them in manually and give them hitReactions
 add clouds that fall down when shot (new gsap.to)
