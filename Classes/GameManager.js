@@ -108,16 +108,16 @@ export default class GameManager {
   scoreNum2 = document.querySelector("img.scoreNum2");
   scoreNum3 = document.querySelector("img.scoreNum3");
   digitPaths = {
-    0: "/public/kenney_shooting-gallery/PNG/HUD/text_0_small.png",
-    1: "/public/kenney_shooting-gallery/PNG/HUD/text_1_small.png",
-    2: "/public/kenney_shooting-gallery/PNG/HUD/text_2_small.png",
-    3: "/public/kenney_shooting-gallery/PNG/HUD/text_3_small.png",
-    4: "/public/kenney_shooting-gallery/PNG/HUD/text_4_small.png",
-    5: "/public/kenney_shooting-gallery/PNG/HUD/text_5_small.png",
-    6: "/public/kenney_shooting-gallery/PNG/HUD/text_6_small.png",
-    7: "/public/kenney_shooting-gallery/PNG/HUD/text_7_small.png",
-    8: "/public/kenney_shooting-gallery/PNG/HUD/text_8_small.png",
-    9: "/public/kenney_shooting-gallery/PNG/HUD/text_9_small.png",
+    0: "/kenney_shooting-gallery/PNG/HUD/text_0_small.png",
+    1: "/kenney_shooting-gallery/PNG/HUD/text_1_small.png",
+    2: "/kenney_shooting-gallery/PNG/HUD/text_2_small.png",
+    3: "/kenney_shooting-gallery/PNG/HUD/text_3_small.png",
+    4: "/kenney_shooting-gallery/PNG/HUD/text_4_small.png",
+    5: "/kenney_shooting-gallery/PNG/HUD/text_5_small.png",
+    6: "/kenney_shooting-gallery/PNG/HUD/text_6_small.png",
+    7: "/kenney_shooting-gallery/PNG/HUD/text_7_small.png",
+    8: "/kenney_shooting-gallery/PNG/HUD/text_8_small.png",
+    9: "/kenney_shooting-gallery/PNG/HUD/text_9_small.png",
   };
 
   gainPoints(points) {
