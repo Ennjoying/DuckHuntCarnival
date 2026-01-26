@@ -26,6 +26,7 @@ export default class SpawnManager {
       new THREE.Vector3(0, 0, 0.5),
     );
     tutorialDuck.children[0].hitReaction = (target, impactPoint) => {
+      this.gameManager.startGame();
       this.animator.animHitWithOnComplete(
         target,
         impactPoint,
@@ -37,10 +38,7 @@ export default class SpawnManager {
         this.animator.pointSounds,
         0.5,
       );
-      this.animator.animTutorialStand(
-        tutorialDuck.children[1],
-        this.gameManager.startGame.bind(this.gameManager),
-      );
+      this.animator.animTutorialStand(tutorialDuck.children[1]);
       this.spawnDecal(target, impactPoint);
     };
 
@@ -93,13 +91,20 @@ export default class SpawnManager {
       this.spawnDecal(target, impactPoint);
     };
 
-    console.log(window.innerWidth); // set swim spawn and direction to the width of the screen
     this.hittableObjects.push(objCopy);
     const zValue = Math.floor(Math.random() * 4) - 0.5;
     this.animator.animSwim(
       objCopy,
-      new THREE.Vector3(-10, Math.random() * 2 - 2, zValue),
-      new THREE.Vector3(10, Math.random() * 2 - 1.5, zValue),
+      new THREE.Vector3(
+        -window.innerWidth / 100 - 1,
+        Math.random() * 2 - 2,
+        zValue,
+      ),
+      new THREE.Vector3(
+        window.innerWidth / 100 + 1,
+        Math.random() * 2 - 1.5,
+        zValue,
+      ),
       this.despawnTarget.bind(this),
     );
   }

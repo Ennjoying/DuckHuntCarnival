@@ -23,6 +23,9 @@ canvas{
     
     user-select: none;
 }
+img{
+    pointer-events: none;
+}
 .score {
     position: absolute;
     display: flex;
@@ -44,7 +47,16 @@ canvas{
     position: absolute;
     pointer-events: none;
     transform: translate(-50%,-50%);
+    
 }
+.tutorialCursor{
+    position:absolute;
+    left: 50%;
+    top: 52.5%;
+    transform: translate(-50%,-50%);
+    
+}
+
 .muzzle{
     position: absolute;
     left: 0;
@@ -63,4 +75,11 @@ canvas{
 
 .bullet {
     padding: 5px;
+}
+
+.readyText{
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%,-50%)
 }

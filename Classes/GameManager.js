@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { readyText, tutorialCursor } from "./../scripts";
 
 export default class GameManager {
   playerpoints = 0;
@@ -44,9 +45,13 @@ export default class GameManager {
 
   timerRef = null;
   timeLeft = 60;
+
+  // #region start and end game
   startGame() {
     this.tutorial = false;
     this.animator.unfocusLights();
+    this.animator.animHudTutorialEnd(tutorialCursor, readyText);
+
     this.timerRef = setInterval(() => {
       this.timeLeft--;
       this.setTime();

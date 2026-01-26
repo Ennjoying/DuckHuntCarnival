@@ -38,22 +38,23 @@ window.addEventListener("mousemove", (event) => {
   rifle.style.left = 1 + 50 * (mousePos.x + 1) + (mousePos.y + 0.7) * 5 + "%";
   //event.clientX + 25 * mousePos.x + (mousePos.y + 0.9) * 150 + "px";
   rifle.style.top = 80 + 15 * -mousePos.y + "%";
+  if (!initialClick) {
+    cameraTarget.position.x = mousePos.x / 2;
+    cameraTarget.position.y = mousePos.y / 2;
+    gameManager.camera.position.x = mousePos.x / 8;
+    gameManager.camera.position.y = mousePos.y / 8;
 
-  cameraTarget.position.x = mousePos.x / 2;
-  cameraTarget.position.y = mousePos.y / 2;
-  gameManager.camera.position.x = mousePos.x / 8;
-  gameManager.camera.position.y = mousePos.y / 8;
-
-  gameManager.camera.lookAt(cameraTarget.position);
+    gameManager.camera.lookAt(cameraTarget.position);
+  }
 });
 
 const rayCaster = new THREE.Raycaster();
 let shootCooldown = false;
 let initialClick = true;
-window.addEventListener("click", () => {
+window.addEventListener("pointerdown", () => {
   if (initialClick) {
     initialClick = false;
-    //animator.playRandomAudioOnLoop(animator.streamSounds);
+    animator.playRandomAudioOnLoop(animator.streamSounds);
   }
 
   if (!shootCooldown && !gameManager.isReloading) {
@@ -115,12 +116,13 @@ window.addEventListener("keydown", () => {
 // #region Loaders
 
 //declare objects that will be loaded
-let gltfObjsLoaded = false;
-
 //loaders
 const loadManager = new THREE.LoadingManager();
 loadManager.onError = (texture) => {
   console.log("OnError", texture);
+};
+loadManager.onLoad = () => {
+  beginPlay();
 };
 const texLoader = new THREE.TextureLoader(loadManager);
 const gltfLoader = new GLTFLoader(loadManager);
@@ -128,19 +130,18 @@ const gltfLoader = new GLTFLoader(loadManager);
 gltfLoader.load("/models/sceneStall.gltf", (gltf) => {
   gameManager.scene.add(gltf.scene);
   //console.log(gltf.scene);
-  animator.lightsRight.push(gltf.scene.getObjectByName("lightRight001"));
-  console.log(gltf.scene.getObjectByName("lightRight001"));
-  animator.lightsRight.push(gltf.scene.getObjectByName("lightRight002"));
-  animator.lightsRight.push(gltf.scene.getObjectByName("lightRight003"));
-  animator.lightsRightNeutralPos.push(animator.lightsRight[0].rotation.clone());
-  animator.lightsRightNeutralPos.push(animator.lightsRight[1].rotation.clone());
-  animator.lightsRightNeutralPos.push(animator.lightsRight[2].rotation.clone());
-  animator.lightsLeft.push(gltf.scene.getObjectByName("lightLeft001"));
-  animator.lightsLeft.push(gltf.scene.getObjectByName("lightLeft002"));
-  animator.lightsLeft.push(gltf.scene.getObjectByName("lightLeft003"));
-  animator.lightsLeftNeutralPos.push(animator.lightsLeft[0].rotation.clone());
-  animator.lightsLeftNeutralPos.push(animator.lightsLeft[1].rotation.clone());
-  animator.lightsLeftNeutralPos.push(animator.lightsLeft[2].rotation.clone());
+  animator.lights.push(gltf.scene.getObjectByName("lightRight001"));
+  animator.lights.push(gltf.scene.getObjectByName("lightRight002"));
+  animator.lights.push(gltf.scene.getObjectByName("lightRight003"));
+  animator.lights.push(gltf.scene.getObjectByName("lightLeft001"));
+  animator.lights.push(gltf.scene.getObjectByName("lightLeft002"));
+  animator.lights.push(gltf.scene.getObjectByName("lightLeft003"));
+  animator.lightsNeutralPos.push(animator.lights[0].rotation.clone());
+  animator.lightsNeutralPos.push(animator.lights[1].rotation.clone());
+  animator.lightsNeutralPos.push(animator.lights[2].rotation.clone());
+  animator.lightsNeutralPos.push(animator.lights[3].rotation.clone());
+  animator.lightsNeutralPos.push(animator.lights[4].rotation.clone());
+  animator.lightsNeutralPos.push(animator.lights[5].rotation.clone());
 });
 gltfLoader.load("/models/MeshesToSpawn.gltf", (gltf) => {
   //assign Meshes
@@ -199,8 +200,6 @@ gltfLoader.load("/models/MeshesToSpawn.gltf", (gltf) => {
     tree1,
     new THREE.Vector3(-5.2, -0.25, -1),
   );
-
-  gltfObjsLoaded = true;
 });
 
 // #endregion
@@ -229,39 +228,44 @@ const wavePos = {
 };
 
 // #endregion
-//event tick
+
+export const tutorialCursor = document.querySelector("img.tutorialCursor");
+export const readyText = document.querySelector("img.readyText");
+// #region beginplay
+function beginPlay() {
+  const tutoDuck = spawner.instantiateTutorialDuck();
+  animator.focusLightsOn(tutoDuck.position);
+  animator.setLightAngle(0.8, 0.2);
+  animator.animHudTutorialBegin(tutorialCursor, readyText);
+
+  eventTick();
+}
+//#region event tick
 const eventTick = () => {
   //set timevariables
   let elapsedTime = clock.getElapsedTime();
   //object updates
-  if (gltfObjsLoaded) {
-    //animate Waves
-    spawner.wave1.position.set(
-      wavePos.wave1x + Math.sin(elapsedTime),
-      wavePos.wave1y + Math.sin(elapsedTime) * 0.1,
-      2 + Math.sin(elapsedTime) * 0.1,
-    );
-    spawner.wave2.position.set(
-      wavePos.wave2x - Math.sin(elapsedTime * 0.8),
-      wavePos.wave2y + Math.sin(elapsedTime * 0.8) * 0.1,
-      1 + Math.sin(elapsedTime * 0.8) * 0.1,
-    );
-    spawner.wave3.position.set(
-      wavePos.wave3x + Math.sin(elapsedTime * 0.6),
-      wavePos.wave3y + Math.sin(elapsedTime * 0.6) * 0.1,
-      Math.sin(elapsedTime * 0.6) * 0.1,
-    );
-    if (gameManager.tutorial) {
-      if (spawner.hittableObjects.length < 1) {
-        const tutoDuck = spawner.instantiateTutorialDuck();
-        animator.focusLightsOn(new THREE.Vector3(0, 2, 0));
-      }
-    } else {
-      spawner.decideSpawn();
-    }
+  //animate Waves
+  spawner.wave1.position.set(
+    wavePos.wave1x + Math.sin(elapsedTime),
+    wavePos.wave1y + Math.sin(elapsedTime) * 0.1,
+    2 + Math.sin(elapsedTime) * 0.1,
+  );
+  spawner.wave2.position.set(
+    wavePos.wave2x - Math.sin(elapsedTime * 0.8),
+    wavePos.wave2y + Math.sin(elapsedTime * 0.8) * 0.1,
+    1 + Math.sin(elapsedTime * 0.8) * 0.1,
+  );
+  spawner.wave3.position.set(
+    wavePos.wave3x + Math.sin(elapsedTime * 0.6),
+    wavePos.wave3y + Math.sin(elapsedTime * 0.6) * 0.1,
+    Math.sin(elapsedTime * 0.6) * 0.1,
+  );
+  if (gameManager.tutorial) {
+  } else {
+    spawner.decideSpawn();
   }
   elapsedTime > 100 ? (elapsedTime = 0) : null;
   gameManager.renderer.render(gameManager.scene, gameManager.camera);
   window.requestAnimationFrame(eventTick);
 };
-eventTick();

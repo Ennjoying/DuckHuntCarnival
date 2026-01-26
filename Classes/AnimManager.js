@@ -56,12 +56,50 @@ export default class AnimManager {
       repeatDelay: 3,
     });
   }
-  animTutorialStand(stand, onCompleteFunc) {
-    gsap.to(stand.position, {
-      y: -6,
-      duration: 2,
-      ease: "elastic.in",
-      onComplete: () => onCompleteFunc(),
+  animTutorialStand(stand) {
+    gsap.to(stand.position, { y: -6, duration: 2, ease: "elastic.in" });
+  }
+  animHudTutorialBegin(cursor, readyText) {
+    gsap.fromTo(
+      cursor,
+      { scale: 15, opacity: 0 },
+      { scale: 3, opacity: 0.5, duration: 2, repeat: -1, ease: "power3.inOut" },
+    );
+    console.log(readyText);
+    gsap.fromTo(
+      readyText,
+      { scale: 1 },
+      {
+        rotation: 360 + "deg",
+        ease: "elastic.inOut",
+        scale: 1.25,
+        duration: 1,
+        repeat: -1,
+        delay: 3,
+        yoyo: true,
+        repeatDelay: 3,
+      },
+    );
+  }
+  animHudTutorialEnd(cursor, readyText) {
+    gsap.killTweensOf(cursor);
+    gsap.killTweensOf(readyText);
+    gsap.fromTo(
+      cursor,
+      { scale: 5, rotation: 0 + "deg", opacity: 0.5 },
+      {
+        scale: 20,
+        rotation: 90 + "deg",
+        opacity: 0,
+        duration: 0.5,
+        ease: "sine.out",
+      },
+    );
+    gsap.to(readyText, {
+      scale: 3,
+      opacity: 0,
+      rotation: 720 + "deg",
+      duration: 0.5,
     });
   }
 
@@ -205,9 +243,12 @@ export default class AnimManager {
 
   //#region sounds
   shotSounds = [
-    new Audio("/sounds/shot_01.ogg"),
-    new Audio("/sounds/shot_02.ogg"),
-    new Audio("/sounds/shot_03.ogg"),
+    //new Audio("/sounds/shot_01.ogg"),
+    //new Audio("/sounds/shot_02.ogg"),
+    //new Audio("/sounds/shot_03.ogg"),
+    new Audio("/sounds/bang_02.ogg"),
+    new Audio("/sounds/bang_05.ogg"),
+    new Audio("/sounds/bang_08.ogg"),
   ];
   reloadSound = [new Audio("/sounds/gunreload1.wav")];
   splashSounds = [
@@ -249,30 +290,28 @@ export default class AnimManager {
   //#endregion
 
   //#region Lights
-  lightsRight = [];
-  lightsRightNeutralPos = [];
-  lightsLeft = [];
-  lightsLeftNeutralPos = [];
+  lights = [];
+  lightsNeutralPos = [];
 
   focusLightsOn(target) {
-    this.lightsLeft.forEach((light) => {
+    this.lights.forEach((light) => {
       light.lookAt(target);
-      //light.angle = 0.3;
     });
-
-    this.lightsRight.forEach((light) => {
-      light.lookAt(target);
-      //light.angle = 0.3;
+  }
+  setLightAngle(angleFrom, angleTo) {
+    this.lights.forEach((light) => {
+      //light.angle = 0.2;
+      gsap.fromTo(light, { angle: angleFrom }, { angle: angleTo, duration: 1 });
     });
   }
 
   unfocusLights() {
-    this.rotateLight(this.lightsRight[0], this.lightsRightNeutralPos[0]);
-    this.rotateLight(this.lightsRight[1], this.lightsRightNeutralPos[1]);
-    this.rotateLight(this.lightsRight[2], this.lightsRightNeutralPos[2]);
-    this.rotateLight(this.lightsLeft[0], this.lightsLeftNeutralPos[0]);
-    this.rotateLight(this.lightsLeft[1], this.lightsLeftNeutralPos[1]);
-    this.rotateLight(this.lightsLeft[2], this.lightsLeftNeutralPos[2]);
+    this.rotateLight(this.lights[0], this.lightsNeutralPos[0]);
+    this.rotateLight(this.lights[1], this.lightsNeutralPos[1]);
+    this.rotateLight(this.lights[2], this.lightsNeutralPos[2]);
+    this.rotateLight(this.lights[3], this.lightsNeutralPos[3]);
+    this.rotateLight(this.lights[4], this.lightsNeutralPos[4]);
+    this.rotateLight(this.lights[5], this.lightsNeutralPos[5]);
   }
 
   rotateLight(light, targetRota) {
