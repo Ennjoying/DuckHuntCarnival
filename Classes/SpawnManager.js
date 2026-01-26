@@ -11,6 +11,7 @@ export default class SpawnManager {
   wave3;
   targetDucks = [];
   targetStands = [];
+  hitDecals = [];
   constructor(animator, scene, gameManager) {
     this.animator = animator;
     this.scene = scene;
@@ -18,31 +19,42 @@ export default class SpawnManager {
     this.gameManager = gameManager;
   }
 
-  tutorialDuck = null;
   //#region tutorial animations
   instantiateTutorialDuck() {
-    this.tutorialDuck = this.instantiate(
+    const tutorialDuck = this.instantiate(
       this.randomizeTarget(),
       new THREE.Vector3(0, 0, 0.5),
     );
-    this.tutorialDuck.children[0].hitReaction = (target, rightHit) => {
-      this.animator.animHitTarget(target, rightHit, this.hitTarget.bind(this));
-      this.animator.animTutorialStand(
-        this.tutorialDuck.children[1],
-        this.gameManager.endTutorial.bind(this.gameManager),
+    tutorialDuck.children[0].hitReaction = (target, impactPoint) => {
+      this.animator.animHitWithOnComplete(
+        target,
+        impactPoint,
+        this.onCompleteHitTarget.bind(this),
       );
+      target.hitReaction = null;
+
+      this.animator.playRandomAudioWithPlaybackVariance(
+        this.animator.pointSounds,
+        0.5,
+      );
+      this.animator.animTutorialStand(
+        tutorialDuck.children[1],
+        this.gameManager.startGame.bind(this.gameManager),
+      );
+      this.spawnDecal(target, impactPoint);
     };
 
-    this.scene.add(this.tutorialDuck);
-    this.hittableObjects.push(this.tutorialDuck);
-    this.animator.animTutorialDuck(this.tutorialDuck);
+    this.scene.add(tutorialDuck);
+    this.hittableObjects.push(tutorialDuck);
+    this.animator.animTutorialDuck(tutorialDuck);
+    return tutorialDuck;
   }
 
   //#endregion
   spawnCooldown = false;
   //#region decisionlogic
   decideSpawn() {
-    if (this.hittableObjects.length < 5 && !this.spawnCooldown) {
+    if (this.hittableObjects.length < 10 && !this.spawnCooldown) {
       this.instantiateShootingTarget(this.randomizeTarget());
       this.spawnCooldown = true;
       setTimeout(() => {
@@ -58,16 +70,31 @@ export default class SpawnManager {
     position ? objCopy.position.copy(position) : null;
     scale ? objCopy.scale.copy(scale) : null;
     rotation ? objCopy.rotation.copy(rotation) : null;
+
+    this.scene.add(objCopy);
     return objCopy;
   }
 
   instantiateShootingTarget(obj, position, scale, rotation) {
     const objCopy = this.instantiate(obj, position, scale, rotation);
-    objCopy.children[0].hitReaction = (target, rightHit) =>
-      this.animator.animHitTarget(target, rightHit, this.hitTarget.bind(this));
-    this.scene.add(objCopy);
+    //child 0 for the duck
+    objCopy.children[0].hitReaction = (target, impactPoint) => {
+      this.animator.animHitWithOnComplete(
+        target,
+        impactPoint,
+        this.onCompleteHitTarget.bind(this),
+      );
+      target.hitReaction = null;
+
+      this.animator.playRandomAudioWithPlaybackVariance(
+        this.animator.pointSounds,
+        0.5,
+      );
+      this.spawnDecal(target, impactPoint);
+    };
+
+    console.log(window.innerWidth); // set swim spawn and direction to the width of the screen
     this.hittableObjects.push(objCopy);
-    // 2.5, 1.5, 0.5 , -0.5
     const zValue = Math.floor(Math.random() * 4) - 0.5;
     this.animator.animSwim(
       objCopy,
@@ -79,12 +106,15 @@ export default class SpawnManager {
 
   instantiateBackgroundTarget(obj, position, scale, rotation) {
     const objCopy = this.instantiate(obj, position, scale, rotation);
-    objCopy.traverse((copy) => {
-      if (copy.isMesh) {
-        copy.hitReaction = (target, rightHit) =>
-          this.animator.animHitObject(target, rightHit);
-      }
-    });
+    objCopy.hitReaction = (target, impactPoint) => {
+      this.animator.animHit(
+        target,
+        impactPoint,
+        this.onCompleteHitObject.bind(this),
+      );
+      this.spawnDecal(target, impactPoint);
+    };
+
     return objCopy;
   }
   randomizeTarget() {
@@ -98,12 +128,27 @@ export default class SpawnManager {
       ].clone(),
     );
     target.scale.set(0.75, 0.75, 0.75);
+
     return target;
+  }
+
+  spawnDecal(hitObject, impactPoint) {
+    //das gespawnte decal ist kinda stuck in der position, es ist vermutlich so
+    //weil die rotation des objs mit dem impact point nicht verrechnet wird.
+    //ich müsste vermutlich die position mit der negativen rota des objects verrechnen
+    // or something like that to fix it. Maybe there is an easier solution tho
+    hitObject.add(this.hitDecals[0].clone());
+    hitObject.worldToLocal(impactPoint);
+    hitObject.children.at(-1).position.set(impactPoint.x, impactPoint.y, +0.2);
+    hitObject.children.at(-1).rotation.set(0, 0, 0);
   }
   // #endregion
 
   //#region remove objects
-  hitTarget(shotTarget) {
+  onCompleteHitObject(shotObject, impactPoint) {
+    this.spawnDecal(shotObject, impactPoint);
+  }
+  onCompleteHitTarget(shotTarget) {
     shotTarget.parent.remove(shotTarget);
     this.gameManager.gainPoints(10);
   }

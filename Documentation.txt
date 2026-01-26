@@ -43,3 +43,13 @@ more light effects: lights that focus the ducks
 Remove the Trees and other Targets from the blender scene,
 add them in manually and give them hitReactions
 add clouds that fall down when shot (new gsap.to)
+
+
+jorge: 
+reload anim not very impactful
+camera movement a bit 2 strong
+json 
+more shooting feedback: screenshake, muzzle flash, bullet hud element ani(how?)
+
+next step: CTA, upload to netlify, loading screen, debug info FPS
+possible improvements: pool the ducks and not constantly spawn them, better performance

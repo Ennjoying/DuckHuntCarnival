@@ -8,8 +8,14 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 // #region Projectsetup, Inputs
 //#region basic Projectsetup
 
-const clock = new THREE.Clock();
+const mousePos = { x: 0, y: 0 };
+const cursor = document.querySelector("div.cursor");
+export const rifle = document.querySelector("div.rifle");
+export const cursorImg = document.querySelector("img.cursorImg");
+let cameraTarget = new THREE.Object3D();
+cameraTarget.position.z = -5;
 
+const clock = new THREE.Clock();
 const animator = new AnimManager();
 const gameManager = new GameManager(animator);
 const spawner = new SpawnManager(animator, gameManager.scene, gameManager);
@@ -23,12 +29,6 @@ const inputs = new OrbitControls(gameManager.camera, gameManager.canvas);
 //inputs.maxPolarAngle = Math.PI * 0.6
 //inputs.enableDamping = true
 //inputs.isLocked = true
-
-const mousePos = { x: 0, y: 0 };
-const cursor = document.querySelector("div.cursor");
-const rifle = document.querySelector("div.rifle");
-let cameraTarget = new THREE.Object3D();
-cameraTarget.position.z = -5;
 
 window.addEventListener("mousemove", (event) => {
   mousePos.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -49,12 +49,19 @@ window.addEventListener("mousemove", (event) => {
 
 const rayCaster = new THREE.Raycaster();
 let shootCooldown = false;
+let initialClick = true;
 window.addEventListener("click", () => {
-  if (!shootCooldown) {
+  if (initialClick) {
+    initialClick = false;
+    //animator.playRandomAudioOnLoop(animator.streamSounds);
+  }
+
+  if (!shootCooldown && !gameManager.isReloading) {
     shootCooldown = true;
-    animator.animHudRifleShot(rifle);
-    //gameManager.shootRifle();
-    if (gameManager.ammo > 0) {
+    animator.animHudShootRifle(rifle);
+    gameManager.shootRifle();
+    if (gameManager.ammo >= 0) {
+      //raycast
       rayCaster.setFromCamera(mousePos, gameManager.camera);
       const intersectedObj = rayCaster.intersectObjects(
         gameManager.scene.children,
@@ -69,19 +76,19 @@ window.addEventListener("click", () => {
           hitObj = intersectedObj[i];
           hitMesh = intersectedObj[i].object;
         }
-        if (hitMesh.hitReaction) break;
-      }
-      //trigger hitreaction function if hitmesh is valid
-      if (hitMesh.hitReaction) {
-        if (hitObj.point.x >= hitObj.object.parent.position.x)
-          hitMesh.hitReaction(hitMesh, true);
-        else hitMesh.hitReaction(hitMesh, false);
-        hitMesh.hitReaction = null;
+        if (hitMesh.hitReaction) {
+          hitMesh.hitReaction(hitMesh, hitObj.point);
+        }
       }
     }
     setTimeout(() => {
       shootCooldown = false;
     }, 500);
+  }
+});
+window.addEventListener("keydown", () => {
+  if (event.key == "r") {
+    if (gameManager.ammo < 3) gameManager.reloadRifle();
   }
 });
 
@@ -118,15 +125,40 @@ loadManager.onError = (texture) => {
 const texLoader = new THREE.TextureLoader(loadManager);
 const gltfLoader = new GLTFLoader(loadManager);
 
-gltfLoader.load("/models/StaticMeshesLightsCamera.gltf", (gltf) => {
+gltfLoader.load("/models/sceneStall.gltf", (gltf) => {
   gameManager.scene.add(gltf.scene);
+  //console.log(gltf.scene);
+  animator.lightsRight.push(gltf.scene.getObjectByName("lightRight001"));
+  console.log(gltf.scene.getObjectByName("lightRight001"));
+  animator.lightsRight.push(gltf.scene.getObjectByName("lightRight002"));
+  animator.lightsRight.push(gltf.scene.getObjectByName("lightRight003"));
+  animator.lightsRightNeutralPos.push(animator.lightsRight[0].rotation.clone());
+  animator.lightsRightNeutralPos.push(animator.lightsRight[1].rotation.clone());
+  animator.lightsRightNeutralPos.push(animator.lightsRight[2].rotation.clone());
+  animator.lightsLeft.push(gltf.scene.getObjectByName("lightLeft001"));
+  animator.lightsLeft.push(gltf.scene.getObjectByName("lightLeft002"));
+  animator.lightsLeft.push(gltf.scene.getObjectByName("lightLeft003"));
+  animator.lightsLeftNeutralPos.push(animator.lightsLeft[0].rotation.clone());
+  animator.lightsLeftNeutralPos.push(animator.lightsLeft[1].rotation.clone());
+  animator.lightsLeftNeutralPos.push(animator.lightsLeft[2].rotation.clone());
 });
-gltfLoader.load("/models/TargetsHudMovableAssets.gltf", (gltf) => {
+gltfLoader.load("/models/MeshesToSpawn.gltf", (gltf) => {
   //assign Meshes
   //console.log(gltf);
   spawner.wave1 = gltf.scene.getObjectByName("waves001");
   spawner.wave2 = gltf.scene.getObjectByName("waves002");
   spawner.wave3 = spawner.wave1.clone();
+
+  spawner.wave1.hitReaction = (target, impactPoint) => {
+    animator.playRandomAudioWithPlaybackVariance(animator.splashSounds, 1);
+  };
+  spawner.wave2.hitReaction = (target, impactPoint) => {
+    animator.playRandomAudioWithPlaybackVariance(animator.splashSounds, 1);
+  };
+  spawner.wave3.hitReaction = (target, impactPoint) => {
+    animator.playRandomAudioWithPlaybackVariance(animator.splashSounds, 1);
+  };
+
   gltf.scene.getObjectByName("StandWood003").position.set(0, -2, 0);
   gltf.scene.getObjectByName("StandWood004").position.set(0, -2, 0);
   gltf.scene.getObjectByName("StandMetal001").position.set(0, -2, 0);
@@ -151,10 +183,22 @@ gltfLoader.load("/models/TargetsHudMovableAssets.gltf", (gltf) => {
     gltf.scene.getObjectByName("StandWood004"),
     gltf.scene.getObjectByName("StandMetal001"),
   );
+  spawner.hitDecals.push(gltf.scene.getObjectByName("DecalHit005"));
+  spawner.hitDecals.push(gltf.scene.getObjectByName("DecalHit006"));
+  spawner.hitDecals.push(gltf.scene.getObjectByName("DecalHit007"));
+  spawner.hitDecals.push(gltf.scene.getObjectByName("DecalHit008"));
   //add Meshes
   gameManager.scene.add(spawner.wave1);
   gameManager.scene.add(spawner.wave2);
   gameManager.scene.add(spawner.wave3);
+  const tree1 = gltf.scene.getObjectByName("Tree001");
+  const tree2 = gltf.scene.getObjectByName("Tree002");
+  spawner.instantiateBackgroundTarget(tree1, new THREE.Vector3(3, 0.1, -1.5));
+  spawner.instantiateBackgroundTarget(tree1, new THREE.Vector3(-4, 0.1, -1.5));
+  spawner.instantiateBackgroundTarget(
+    tree1,
+    new THREE.Vector3(-5.2, -0.25, -1),
+  );
 
   gltfObjsLoaded = true;
 });
@@ -191,6 +235,7 @@ const eventTick = () => {
   let elapsedTime = clock.getElapsedTime();
   //object updates
   if (gltfObjsLoaded) {
+    //animate Waves
     spawner.wave1.position.set(
       wavePos.wave1x + Math.sin(elapsedTime),
       wavePos.wave1y + Math.sin(elapsedTime) * 0.1,
@@ -207,12 +252,14 @@ const eventTick = () => {
       Math.sin(elapsedTime * 0.6) * 0.1,
     );
     if (gameManager.tutorial) {
-      if (spawner.hittableObjects.length < 1) spawner.instantiateTutorialDuck();
+      if (spawner.hittableObjects.length < 1) {
+        const tutoDuck = spawner.instantiateTutorialDuck();
+        animator.focusLightsOn(new THREE.Vector3(0, 2, 0));
+      }
     } else {
       spawner.decideSpawn();
     }
   }
-
   elapsedTime > 100 ? (elapsedTime = 0) : null;
   gameManager.renderer.render(gameManager.scene, gameManager.camera);
   window.requestAnimationFrame(eventTick);

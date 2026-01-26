@@ -23,28 +23,42 @@ canvas{
     
     user-select: none;
 }
-
+.score {
+    position: absolute;
+    display: flex;
+    left: 30px;
+    top: 50px;
+    color: #ffffff;
+    font-size: 2em;
+}
+.duckIcon{
+    padding-right: 15px;
+}
+.timer{
+    position: absolute;
+    display: flex;
+    top: 40px;
+    right: 50px;
+}
 .cursor{
     position: absolute;
     pointer-events: none;
     transform: translate(-50%,-50%);
 }
+.muzzle{
+    position: absolute;
+    left: 0;
+    scale: 1.5;
+}
 .rifle{
     position: absolute;
     rotate: 5deg;
 }
-.score {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    color: #ffffff;
-    font-size: 2em;
-}
 
 .bullets {
     position: absolute;
-    right: 100px;
-    bottom: 50px;
+    right: 40px;
+    bottom: 40px;
 }
 
 .bullet {
