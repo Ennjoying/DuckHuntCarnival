@@ -3,6 +3,7 @@ import SpawnManager from "./SpawnManager";
 import { rifle, cursorImg } from "./../scripts";
 import { ThreeMFLoader } from "three/examples/jsm/Addons.js";
 import { Vector3 } from "three";
+import { mx_bilerp_0 } from "three/src/nodes/materialx/lib/mx_noise.js";
 //animManager, just fire and forget animations
 
 export default class AnimManager {
@@ -59,53 +60,9 @@ export default class AnimManager {
   animTutorialStand(stand) {
     gsap.to(stand.position, { y: -6, duration: 2, ease: "elastic.in" });
   }
-  animHudTutorialBegin(cursor, readyText) {
-    gsap.fromTo(
-      cursor,
-      { scale: 15, opacity: 0 },
-      { scale: 3, opacity: 0.5, duration: 2, repeat: -1, ease: "power3.inOut" },
-    );
-    console.log(readyText);
-    gsap.fromTo(
-      readyText,
-      { scale: 1 },
-      {
-        rotation: 360 + "deg",
-        ease: "elastic.inOut",
-        scale: 1.25,
-        duration: 1,
-        repeat: -1,
-        delay: 3,
-        yoyo: true,
-        repeatDelay: 3,
-      },
-    );
-  }
-  animHudTutorialEnd(cursor, readyText) {
-    gsap.killTweensOf(cursor);
-    gsap.killTweensOf(readyText);
-    gsap.fromTo(
-      cursor,
-      { scale: 5, rotation: 0 + "deg", opacity: 0.5 },
-      {
-        scale: 20,
-        rotation: 90 + "deg",
-        opacity: 0,
-        duration: 0.5,
-        ease: "sine.out",
-      },
-    );
-    gsap.to(readyText, {
-      scale: 3,
-      opacity: 0,
-      rotation: 720 + "deg",
-      duration: 0.5,
-    });
-  }
-
   animSwim(target, fromPos, toPos, onCompleteFunc) {
     const tl = gsap.timeline();
-    const swimDuration = 10;
+    const swimDuration = 15;
     setTimeout(
       () => {
         this.playRandomAudioWithPlaybackVariance(this.quackSounds, 1);
@@ -164,6 +121,141 @@ export default class AnimManager {
       },
     );
   }
+  //#region hud Anims
+
+  animHudTutorialBegin(cursor, readyText) {
+    gsap.fromTo(
+      cursor,
+      { scale: 15, opacity: 0 },
+      { scale: 3, opacity: 0.5, duration: 2, repeat: -1, ease: "power3.inOut" },
+    );
+    gsap.fromTo(
+      readyText,
+      { scale: 1 },
+      {
+        rotation: 360 + "deg",
+        ease: "elastic.inOut",
+        scale: 1.25,
+        duration: 1,
+        repeat: -1,
+        delay: 3,
+        yoyo: true,
+        repeatDelay: 3,
+      },
+    );
+  }
+  animHudTutorialEnd(cursor, readyText) {
+    gsap.killTweensOf(cursor);
+    gsap.killTweensOf(readyText);
+    gsap.fromTo(
+      cursor,
+      { scale: 5, rotation: 0 + "deg", opacity: 0.5 },
+      {
+        scale: 20,
+        rotation: 90 + "deg",
+        opacity: 0,
+        duration: 0.5,
+        ease: "sine.out",
+      },
+    );
+    gsap.to(readyText, {
+      scale: 3,
+      opacity: 0,
+      rotation: 720 + "deg",
+      duration: 0.5,
+    });
+  }
+  animHudShootRifle() {
+    this.playRandomAudioWithPlaybackVariance(this.shotSounds, 0.3);
+    gsap.to(rifle, {
+      rotate: 35 + "deg",
+      left: "+=4%",
+      duration: 0.075,
+      yoyo: true,
+      repeat: 1,
+    });
+  }
+  animHudReloadRifle(onCompleteFunc) {
+    this.playRandomAudioWithPlaybackVariance(this.reloadSound, 0.3);
+    cursorImg.src = "/kenney_shooting-gallery/PNG/HUD/crosshair_red_large.png";
+    gsap.to(rifle, {
+      rotate: -35 + "deg",
+      duration: 1,
+      yoyo: true,
+      repeat: 1,
+      ease: "bounce.out",
+      onComplete: () => {
+        onCompleteFunc();
+        cursorImg.src =
+          "/kenney_shooting-gallery/PNG/HUD/crosshair_outline_large.png";
+      },
+    });
+    //ifle.style.rotate = "5deg";
+  }
+
+  animHudFadeLoadscreen(loadScreen, loadText) {
+    gsap.to(loadText, {
+      top: -5 + "%",
+      duration: 1,
+      ease: "elastic.in",
+      onComplete: () => {
+        gsap.to(loadScreen, {
+          opacity: 0,
+          duration: 1,
+          onComplete: () => {
+            loadScreen.style.display = "none";
+          },
+        });
+      },
+    });
+  }
+  animHudTimeUp(textTimeUp, scoreText, replayButton) {
+    gsap.fromTo(
+      textTimeUp,
+      { scale: 10 },
+      {
+        opacity: 1,
+        scale: 1,
+        rotation: 360 + "deg",
+        duration: 1,
+        onComplete: () => {
+          gsap.to(textTimeUp, {
+            top: -5 + "%",
+            duration: 1.5,
+            ease: "elastic.in",
+          });
+          gsap.to(scoreText, {
+            top: 20 + "%",
+            duration: 1.5,
+            ease: "elastic.in",
+          });
+          gsap.to(replayButton, {
+            top: 70 + "%",
+            duration: 1.5,
+            ease: "elastic.in",
+            onComplete: () => {
+              gsap.fromTo(
+                replayButton,
+                { scale: 1 },
+                {
+                  rotation: 360 + "deg",
+                  ease: "elastic.inOut",
+                  scale: 1.25,
+                  duration: 1,
+                  repeat: -1,
+                  delay: 3,
+                  yoyo: true,
+                  repeatDelay: 3,
+                },
+              );
+            },
+          });
+        },
+      },
+    );
+  }
+
+  //#endregion
 
   //#region hit animations
   animHit(shotObject, impactPoint) {
@@ -173,12 +265,20 @@ export default class AnimManager {
       shotObject.position.x < shotObject.localToWorld(impactPoint.clone()).x
     ) {
       gsap.to(shotObject.rotation, {
-        y: shotObject.rotation.y + Math.PI + Math.random() * Math.PI * 4,
+        y:
+          shotObject.rotation.y +
+          Math.PI +
+          (Math.min(0.2, Math.max(0.8, Math.random())) * Math.PI) / 4 +
+          Math.PI * 3,
         duration: 0.25 + Math.random(),
       });
     } else {
       gsap.to(shotObject.rotation, {
-        y: shotObject.rotation.y - Math.PI - Math.random() * Math.PI * 4,
+        y:
+          shotObject.rotation.y -
+          Math.PI -
+          (Math.min(0.2, Math.max(0.8, Math.random())) * Math.PI) / 4 +
+          Math.PI * 3,
         duration: 0.25 + Math.random(),
       });
     }
@@ -212,34 +312,6 @@ export default class AnimManager {
       repeat: 3,
     });
   } */
-
-  animHudShootRifle() {
-    this.playRandomAudioWithPlaybackVariance(this.shotSounds, 0.3);
-    gsap.to(rifle, {
-      rotate: 35 + "deg",
-      left: "+=4%",
-      duration: 0.075,
-      yoyo: true,
-      repeat: 1,
-    });
-  }
-  animHudReloadRifle(onCompleteFunc) {
-    this.playRandomAudioWithPlaybackVariance(this.reloadSound, 0.3);
-    cursorImg.src = "/kenney_shooting-gallery/PNG/HUD/crosshair_red_large.png";
-    gsap.to(rifle, {
-      rotate: -35 + "deg",
-      duration: 1,
-      yoyo: true,
-      repeat: 1,
-      ease: "bounce.out",
-      onComplete: () => {
-        onCompleteFunc();
-        cursorImg.src =
-          "/kenney_shooting-gallery/PNG/HUD/crosshair_outline_large.png";
-      },
-    });
-    //ifle.style.rotate = "5deg";
-  }
 
   //#region sounds
   shotSounds = [
@@ -298,23 +370,23 @@ export default class AnimManager {
       light.lookAt(target);
     });
   }
-  setLightAngle(angleFrom, angleTo) {
+  animLightAngle(angleFrom, angleTo) {
     this.lights.forEach((light) => {
-      //light.angle = 0.2;
       gsap.fromTo(light, { angle: angleFrom }, { angle: angleTo, duration: 1 });
+    });
+  }
+  animLightIntensity(lightIntensity) {
+    this.lights.forEach((light) => {
+      gsap.to(light, { intensity: lightIntensity, duration: 1 });
     });
   }
 
   unfocusLights() {
-    this.rotateLight(this.lights[0], this.lightsNeutralPos[0]);
-    this.rotateLight(this.lights[1], this.lightsNeutralPos[1]);
-    this.rotateLight(this.lights[2], this.lightsNeutralPos[2]);
-    this.rotateLight(this.lights[3], this.lightsNeutralPos[3]);
-    this.rotateLight(this.lights[4], this.lightsNeutralPos[4]);
-    this.rotateLight(this.lights[5], this.lightsNeutralPos[5]);
+    for (let i = 0; i < this.lights.length; i++)
+      this.rotateLightToward(this.lights[i], this.lightsNeutralPos[i]);
   }
 
-  rotateLight(light, targetRota) {
+  rotateLightToward(light, targetRota) {
     gsap.to(light.rotation, { y: targetRota.y + 1, duration: 1 });
     gsap.to(light.rotation, {
       x: targetRota.x,
@@ -323,6 +395,24 @@ export default class AnimManager {
       duration: 1,
     });
     gsap.to(light, { angle: 0.4, duration: 1 });
+  }
+  swayLights(maxSway) {
+    for (let i = 0; i < this.lights.length; i++) {
+      let t = 0;
+      const neutralPos = this.lights[i].rotation.clone();
+      if (Math.random() >= 0.5)
+        gsap.ticker.add(() => {
+          t += gsap.ticker.deltaRatio() * 0.02;
+          this.lights[i].rotation.x = neutralPos.x - Math.sin(t) * maxSway;
+          this.lights[i].rotation.y = neutralPos.y + Math.cos(t) * maxSway;
+        });
+      else
+        gsap.ticker.add(() => {
+          t += gsap.ticker.deltaRatio() * 0.02;
+          this.lights[i].rotation.x = neutralPos.x + Math.sin(t) * maxSway;
+          this.lights[i].rotation.y = neutralPos.y - Math.cos(t) * maxSway;
+        });
+    }
   }
 
   //#endregion

@@ -23,6 +23,24 @@ canvas{
     
     user-select: none;
 }
+#loadScreen{
+    position: absolute;
+  inset: 0;
+  background: black;
+  display: flex;
+  color: white;
+  z-index: 9999;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+#loadText{
+    position:absolute;
+    
+  font-size: 40px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%)
+}
+
 img{
     pointer-events: none;
 }
@@ -31,10 +49,9 @@ img{
     display: flex;
     left: 30px;
     top: 50px;
-    color: #ffffff;
-    font-size: 2em;
 }
 .duckIcon{
+    padding-left: 15px;
     padding-right: 15px;
 }
 .timer{
@@ -82,4 +99,39 @@ img{
     left: 50%;
     top: 20%;
     transform: translate(-50%,-50%)
+}
+
+#textTimeUp{
+    position: absolute;
+    opacity: 0;
+
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+#endScore{
+    position: absolute;
+    top: 120%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+#endScoreNum1{
+    padding-left:50px;
+}
+#continueBtn{
+    position: absolute;
+    background: rgb(153, 90, 19);
+    color: rgb(255, 228, 212);
+    border-radius: 10px;
+    border-width: 0px;
+    border-color: rgb(153, 90, 19);
+    border-style:solid;
+    padding: 10px;
+    font-family: fantasy;
+    font-size: 30px;
+    top: 170%;
+    left: 50%;
+    transform: translate(-50%,-50%);
 }

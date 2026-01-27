@@ -12,6 +12,8 @@ const mousePos = { x: 0, y: 0 };
 const cursor = document.querySelector("div.cursor");
 export const rifle = document.querySelector("div.rifle");
 export const cursorImg = document.querySelector("img.cursorImg");
+let tree1 = null;
+let tree2 = null;
 let cameraTarget = new THREE.Object3D();
 cameraTarget.position.z = -5;
 
@@ -24,28 +26,43 @@ gameManager.initGameScene();
 
 // #region Inputs
 
-const inputs = new OrbitControls(gameManager.camera, gameManager.canvas);
+//const inputs = new OrbitControls(gameManager.camera, gameManager.canvas);
 //inputs.minPolarAngle = Math.PI * 0.4
 //inputs.maxPolarAngle = Math.PI * 0.6
 //inputs.enableDamping = true
 //inputs.isLocked = true
-
-window.addEventListener("mousemove", (event) => {
+const body = window.addEventListener("mousemove", (event) => {
   mousePos.x = (event.clientX / window.innerWidth) * 2 - 1;
   mousePos.y = 1 - (event.clientY / window.innerHeight) * 2;
-  cursor.style.left = event.clientX + "px";
-  cursor.style.top = event.clientY + "px";
-  rifle.style.left = 1 + 50 * (mousePos.x + 1) + (mousePos.y + 0.7) * 5 + "%";
-  //event.clientX + 25 * mousePos.x + (mousePos.y + 0.9) * 150 + "px";
-  rifle.style.top = 80 + 15 * -mousePos.y + "%";
+
   if (!initialClick) {
     cameraTarget.position.x = mousePos.x / 2;
     cameraTarget.position.y = mousePos.y / 2;
     gameManager.camera.position.x = mousePos.x / 8;
     gameManager.camera.position.y = mousePos.y / 8;
-
-    gameManager.camera.lookAt(cameraTarget.position);
   }
+  if (!gameManager.gameEnded) {
+    cameraTarget.position.x = mousePos.x / 2;
+    cameraTarget.position.y = mousePos.y / 2;
+    gameManager.camera.position.x = mousePos.x / 8;
+    gameManager.camera.position.y = mousePos.y / 8;
+    cursor.style.left = event.clientX + "px";
+    cursor.style.top = event.clientY + "px";
+
+    rifle.style.left = 1 + 50 * (mousePos.x + 1) + (mousePos.y + 0.7) * 5 + "%";
+    rifle.style.top = 80 + 15 * -mousePos.y + "%";
+  } else {
+    cameraTarget.position.x = mousePos.x / 8;
+    cameraTarget.position.y = mousePos.y / 8;
+    gameManager.camera.position.x = mousePos.x / 32;
+    gameManager.camera.position.y = mousePos.y / 32;
+    cursor.style.display = "none";
+    document.body.style.cursor = "default";
+    rifle.style.left = 70 + 5 * (mousePos.x + 1) + "%";
+    rifle.style.top = 85 + "%";
+    rifle.style.rotate = -45 + "deg";
+  }
+  gameManager.camera.lookAt(cameraTarget.position);
 });
 
 const rayCaster = new THREE.Raycaster();
@@ -57,7 +74,12 @@ window.addEventListener("pointerdown", () => {
     animator.playRandomAudioOnLoop(animator.streamSounds);
   }
 
-  if (!shootCooldown && !gameManager.isReloading) {
+  if (
+    !shootCooldown &&
+    loadFinished &&
+    !gameManager.isReloading &&
+    !gameManager.gameEnded
+  ) {
     shootCooldown = true;
     animator.animHudShootRifle(rifle);
     gameManager.shootRifle();
@@ -118,10 +140,29 @@ window.addEventListener("keydown", () => {
 //declare objects that will be loaded
 //loaders
 const loadManager = new THREE.LoadingManager();
+const loadScreen = document.getElementById("loadScreen");
+const loadText = document.getElementById("loadText");
 loadManager.onError = (texture) => {
   console.log("OnError", texture);
 };
+loadManager.onProgress = (url, currentLoading, totalToLoad) => {
+  let percent = Math.floor((currentLoading / totalToLoad) * 100);
+  let duckString = `<img
+      class="duckIcon"
+      src="/kenney_shooting-gallery/PNG/HUD/icon_duck.png"
+    />`;
+  loadText.innerHTML = "Loading" + duckString + percent + "%";
+  /* let percent = Math.floor((currentLoading / totalToLoad) * 5);
+  
+  loadText.innerHTML = "";
+  for (let i = 0; i < percent; i++) {
+    loadText.innerHTML += duckString;
+  } */
+};
+let loadFinished = false;
 loadManager.onLoad = () => {
+  animator.animHudFadeLoadscreen(loadScreen, loadText);
+  setTimeout(() => (loadFinished = true), 1000);
   beginPlay();
 };
 const texLoader = new THREE.TextureLoader(loadManager);
@@ -133,15 +174,19 @@ gltfLoader.load("/models/sceneStall.gltf", (gltf) => {
   animator.lights.push(gltf.scene.getObjectByName("lightRight001"));
   animator.lights.push(gltf.scene.getObjectByName("lightRight002"));
   animator.lights.push(gltf.scene.getObjectByName("lightRight003"));
+  animator.lights.push(gltf.scene.getObjectByName("lightRight004"));
   animator.lights.push(gltf.scene.getObjectByName("lightLeft001"));
   animator.lights.push(gltf.scene.getObjectByName("lightLeft002"));
   animator.lights.push(gltf.scene.getObjectByName("lightLeft003"));
+  animator.lights.push(gltf.scene.getObjectByName("lightLeft004"));
   animator.lightsNeutralPos.push(animator.lights[0].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[1].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[2].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[3].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[4].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[5].rotation.clone());
+  animator.lightsNeutralPos.push(animator.lights[6].rotation.clone());
+  animator.lightsNeutralPos.push(animator.lights[7].rotation.clone());
 });
 gltfLoader.load("/models/MeshesToSpawn.gltf", (gltf) => {
   //assign Meshes
@@ -192,14 +237,15 @@ gltfLoader.load("/models/MeshesToSpawn.gltf", (gltf) => {
   gameManager.scene.add(spawner.wave1);
   gameManager.scene.add(spawner.wave2);
   gameManager.scene.add(spawner.wave3);
-  const tree1 = gltf.scene.getObjectByName("Tree001");
-  const tree2 = gltf.scene.getObjectByName("Tree002");
-  spawner.instantiateBackgroundTarget(tree1, new THREE.Vector3(3, 0.1, -1.5));
-  spawner.instantiateBackgroundTarget(tree1, new THREE.Vector3(-4, 0.1, -1.5));
-  spawner.instantiateBackgroundTarget(
+  tree1 = gltf.scene.getObjectByName("Tree001");
+  tree2 = gltf.scene.getObjectByName("Tree002");
+  /* spawner.instantiateBgTarget(tree1, new THREE.Vector3(3, 0.1, -1.5));
+  spawner.instantiateBgTarget(tree1, new THREE.Vector3(-4, 0.1, -1.5));
+  spawner.instantiateBgTarget(tree1, new THREE.Vector3(-5.2, -0.25, -1));
+  spawner.instantiateBgTarget(
     tree1,
-    new THREE.Vector3(-5.2, -0.25, -1),
-  );
+    new THREE.Vector3(Math.random() * 10 - 5, -0.25, -1),
+  ); */
 });
 
 // #endregion
@@ -235,9 +281,10 @@ export const readyText = document.querySelector("img.readyText");
 function beginPlay() {
   const tutoDuck = spawner.instantiateTutorialDuck();
   animator.focusLightsOn(tutoDuck.position);
-  animator.setLightAngle(0.8, 0.2);
+  animator.swayLights(0.1);
+  animator.animLightAngle(0.8, 0.2);
   animator.animHudTutorialBegin(tutorialCursor, readyText);
-
+  spawner.spawnTrees(tree1, tree2); //
   eventTick();
 }
 //#region event tick
@@ -261,10 +308,7 @@ const eventTick = () => {
     wavePos.wave3y + Math.sin(elapsedTime * 0.6) * 0.1,
     Math.sin(elapsedTime * 0.6) * 0.1,
   );
-  if (gameManager.tutorial) {
-  } else {
-    spawner.decideSpawn();
-  }
+  if (!gameManager.tutorial && !gameManager.gameEnded) spawner.decideSpawn();
   elapsedTime > 100 ? (elapsedTime = 0) : null;
   gameManager.renderer.render(gameManager.scene, gameManager.camera);
   window.requestAnimationFrame(eventTick);

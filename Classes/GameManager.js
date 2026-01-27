@@ -59,9 +59,22 @@ export default class GameManager {
     }, 1000);
   }
 
+  endGameDiv = document.getElementById("endGame");
+  textTimeUp = document.getElementById("textTimeUp");
+  endScore = document.getElementById("endScore");
+  continueButton = document.getElementById("continueBtn");
+  gameEnded = false;
   endGame() {
+    this.gameEnded = true;
     clearInterval(this.timerRef);
-    console.log("game over !");
+    document.getElementById("hud").style.opacity = 0;
+    this.animator.animLightIntensity(5);
+    this.animator.animHudTimeUp(
+      this.textTimeUp,
+      this.endScore,
+      this.continueButton,
+    );
+    this.displayEndScore();
   }
 
   bullet1 = document.querySelector("img.bullet1");
@@ -112,7 +125,7 @@ export default class GameManager {
   scoreNum1 = document.querySelector("img.scoreNum1");
   scoreNum2 = document.querySelector("img.scoreNum2");
   scoreNum3 = document.querySelector("img.scoreNum3");
-  digitPaths = {
+  smallNumSrc = {
     0: "/kenney_shooting-gallery/PNG/HUD/text_0_small.png",
     1: "/kenney_shooting-gallery/PNG/HUD/text_1_small.png",
     2: "/kenney_shooting-gallery/PNG/HUD/text_2_small.png",
@@ -124,19 +137,31 @@ export default class GameManager {
     8: "/kenney_shooting-gallery/PNG/HUD/text_8_small.png",
     9: "/kenney_shooting-gallery/PNG/HUD/text_9_small.png",
   };
+  numSrc = {
+    0: "/kenney_shooting-gallery/PNG/HUD/text_0.png",
+    1: "/kenney_shooting-gallery/PNG/HUD/text_1.png",
+    2: "/kenney_shooting-gallery/PNG/HUD/text_2.png",
+    3: "/kenney_shooting-gallery/PNG/HUD/text_3.png",
+    4: "/kenney_shooting-gallery/PNG/HUD/text_4.png",
+    5: "/kenney_shooting-gallery/PNG/HUD/text_5.png",
+    6: "/kenney_shooting-gallery/PNG/HUD/text_6.png",
+    7: "/kenney_shooting-gallery/PNG/HUD/text_7.png",
+    8: "/kenney_shooting-gallery/PNG/HUD/text_8.png",
+    9: "/kenney_shooting-gallery/PNG/HUD/text_9.png",
+  };
 
   gainPoints(points) {
     this.playerpoints += points;
     //set points in hud
     const scoreString = this.playerpoints.toString();
     if (this.playerpoints >= 100) {
-      this.scoreNum1.src = this.digitPaths[scoreString[0]];
-      this.scoreNum2.src = this.digitPaths[scoreString[1]];
-      this.scoreNum3.src = this.digitPaths[scoreString[2]];
+      this.scoreNum1.src = this.smallNumSrc[scoreString[0]];
+      this.scoreNum2.src = this.smallNumSrc[scoreString[1]];
+      this.scoreNum3.src = this.smallNumSrc[scoreString[2]];
     } else {
-      this.scoreNum1.src = this.digitPaths[0];
-      this.scoreNum2.src = this.digitPaths[scoreString[0]];
-      this.scoreNum3.src = this.digitPaths[scoreString[1]];
+      this.scoreNum1.src = this.smallNumSrc[0];
+      this.scoreNum2.src = this.smallNumSrc[scoreString[0]];
+      this.scoreNum3.src = this.smallNumSrc[scoreString[1]];
     }
   }
 
@@ -145,11 +170,24 @@ export default class GameManager {
   setTime() {
     const timeString = this.timeLeft.toString();
     if (this.timeLeft < 10) {
-      this.timerNum1.src = this.digitPaths[0];
-      this.timerNum2.src = this.digitPaths[timeString[0]];
+      this.timerNum1.src = this.smallNumSrc[0];
+      this.timerNum2.src = this.smallNumSrc[timeString[0]];
     } else {
-      this.timerNum1.src = this.digitPaths[timeString[0]];
-      this.timerNum2.src = this.digitPaths[timeString[1]];
+      this.timerNum1.src = this.smallNumSrc[timeString[0]];
+      this.timerNum2.src = this.smallNumSrc[timeString[1]];
+    }
+  }
+
+  displayEndScore() {
+    const scoreString = this.playerpoints.toString();
+    if (this.playerpoints >= 100) {
+      document.getElementById("endScoreNum1").src = this.numSrc[scoreString[0]];
+      document.getElementById("endScoreNum2").src = this.numSrc[scoreString[1]];
+      document.getElementById("endScoreNum3").src = this.numSrc[scoreString[2]];
+    } else {
+      document.getElementById("endScoreNum1").src = this.numSrc[0];
+      document.getElementById("endScoreNum2").src = this.numSrc[scoreString[0]];
+      document.getElementById("endScoreNum3").src = this.numSrc[scoreString[1]];
     }
   }
 }

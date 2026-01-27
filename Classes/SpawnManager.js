@@ -96,12 +96,12 @@ export default class SpawnManager {
     this.animator.animSwim(
       objCopy,
       new THREE.Vector3(
-        -window.innerWidth / 100 - 1,
+        -window.innerWidth / 150 - 2,
         Math.random() * 2 - 2,
         zValue,
       ),
       new THREE.Vector3(
-        window.innerWidth / 100 + 1,
+        window.innerWidth / 150 + 2,
         Math.random() * 2 - 1.5,
         zValue,
       ),
@@ -109,7 +109,7 @@ export default class SpawnManager {
     );
   }
 
-  instantiateBackgroundTarget(obj, position, scale, rotation) {
+  instantiateBgTarget(obj, position, scale, rotation) {
     const objCopy = this.instantiate(obj, position, scale, rotation);
     objCopy.hitReaction = (target, impactPoint) => {
       this.animator.animHit(
@@ -142,10 +142,58 @@ export default class SpawnManager {
     //weil die rotation des objs mit dem impact point nicht verrechnet wird.
     //ich müsste vermutlich die position mit der negativen rota des objects verrechnen
     // or something like that to fix it. Maybe there is an easier solution tho
-    hitObject.add(this.hitDecals[0].clone());
+    hitObject.add(
+      this.hitDecals[Math.floor(Math.random() * this.hitDecals.length)].clone(),
+    );
     hitObject.worldToLocal(impactPoint);
     hitObject.children.at(-1).position.set(impactPoint.x, impactPoint.y, +0.2);
     hitObject.children.at(-1).rotation.set(0, 0, 0);
+  }
+
+  spawnTrees(tree1, tree2) {
+    const loopMax = 20;
+    const xFactor = 10;
+    const yFactor = 1.5 / loopMax;
+    const yConst = -0.75;
+    const zFactor = 1.5 / loopMax;
+    const zConst = -0.25;
+    for (let i = 0; i < loopMax; i++) {
+      if (Math.random() > 0.5) {
+        this.instantiateBgTarget(
+          tree1,
+          new THREE.Vector3(
+            Math.random() * xFactor - 1,
+            yConst + i * yFactor,
+            zConst - i * zFactor,
+          ),
+        );
+        this.instantiateBgTarget(
+          tree1,
+          new THREE.Vector3(
+            Math.random() * xFactor - xFactor + 1,
+            yConst + i * yFactor,
+            zConst - i * zFactor,
+          ),
+        );
+      } else {
+        this.instantiateBgTarget(
+          tree2,
+          new THREE.Vector3(
+            Math.random() * xFactor - 1,
+            yConst + i * yFactor,
+            zConst - i * zFactor,
+          ),
+        );
+        this.instantiateBgTarget(
+          tree2,
+          new THREE.Vector3(
+            Math.random() * xFactor - xFactor + 1,
+            yConst + i * yFactor,
+            zConst - i * zFactor,
+          ),
+        );
+      }
+    }
   }
   // #endregion
 

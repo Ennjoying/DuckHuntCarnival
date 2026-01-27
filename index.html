@@ -10,45 +10,101 @@
   <body>
     <canvas class="viewport"></canvas>
     <div class="ui">
-      <div class="cursor">
-        <img class="cursorImg"
-          src="/kenney_shooting-gallery/PNG/HUD/crosshair_outline_large.png"
-        />
-      </div>
-      <div >
-        <img class="tutorialCursor" src="/kenney_shooting-gallery/PNG/HUD/crosshair_white_large.png">
-      </div>
-      <div class="rifle">
-        <img  src="/kenney_shooting-gallery/PNG/Objects/rifle.png" /><!-- 
+      <div id="hud">
+        <div class="cursor">
+          <img
+            class="cursorImg"
+            src="/kenney_shooting-gallery/PNG/HUD/crosshair_outline_large.png"
+          />
+        </div>
+        <div>
+          <img
+            class="tutorialCursor"
+            src="/kenney_shooting-gallery/PNG/HUD/crosshair_white_large.png"
+          />
+        </div>
+        <div class="rifle">
+          <img src="/kenney_shooting-gallery/PNG/Objects/rifle.png" /><!-- 
         <img class="muzzle"src="/kenney_shooting-gallery/PNG/Objects/shot_yellow_large.png" /> -->
-      </div>
-      <div class ="score">
-        <img class="duckIcon" src="/kenney_shooting-gallery/PNG/HUD/icon_duck.png" />
-        <img class = "scoreNum1" src="/kenney_shooting-gallery/PNG/HUD/text_0_small.png" />
-        <img class = "scoreNum2" src="/kenney_shooting-gallery/PNG/HUD/text_0_small.png" />
-        <img class = "scoreNum3" src="/kenney_shooting-gallery/PNG/HUD/text_0_small.png" />
-      </div>
-      <div class="timer">
-        <img class = "timerNum1" src="/kenney_shooting-gallery/PNG/HUD/text_6_small.png" />
-        <img class = "timerNum2" src="/kenney_shooting-gallery/PNG/HUD/text_0_small.png" />
-      </div>
-      <div class="bullets" id="bullets">
-        <img
-          class="bullet bullet3"
-          src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
-        />
+        </div>
+        <div class="score">
+          <img
+            class="duckIcon"
+            src="/kenney_shooting-gallery/PNG/HUD/icon_duck.png"
+          />
+          <img
+            class="scoreNum1"
+            src="/kenney_shooting-gallery/PNG/HUD/text_0_small.png"
+          />
+          <img
+            class="scoreNum2"
+            src="/kenney_shooting-gallery/PNG/HUD/text_0_small.png"
+          />
+          <img
+            class="scoreNum3"
+            src="/kenney_shooting-gallery/PNG/HUD/text_0_small.png"
+          />
+        </div>
+        <div class="timer">
+          <img
+            class="timerNum1"
+            src="/kenney_shooting-gallery/PNG/HUD/text_6_small.png"
+          />
+          <img
+            class="timerNum2"
+            src="/kenney_shooting-gallery/PNG/HUD/text_0_small.png"
+          />
+        </div>
+        <div class="bullets" id="bullets">
+          <img
+            class="bullet bullet3"
+            src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
+          />
 
+          <img
+            class="bullet bullet2"
+            src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
+          />
+          <img
+            class="bullet bullet1"
+            src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
+          />
+        </div>
+      </div>
+      <div id="loadScreen">
+        <div id="loadText">
+          Loading
+          <img
+            class="duckIcon"
+            src="/kenney_shooting-gallery/PNG/HUD/icon_duck.png"
+          />
+          0%
+        </div>
+      </div>
+
+      <div>
         <img
-          class="bullet bullet2"
-          src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
-        />
-        <img
-          class="bullet bullet1"
-          src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
+          class="readyText"
+          src="/kenney_shooting-gallery/PNG/HUD/text_ready.png"
         />
       </div>
-      <div>
-        <img class="readyText" src="/kenney_shooting-gallery/PNG/HUD/text_ready.png">
+      <div id="endGame">
+        <div id="endScore">
+          <img src="/kenney_shooting-gallery/PNG/HUD/text_score.png" />
+          <img src="/kenney_shooting-gallery/PNG/HUD/text_dots.png" />
+          <img id="endScoreNum1" />
+          <img id="endScoreNum2" />
+          <img id="endScoreNum3" />
+        </div>
+        <div>
+          <button id="continueBtn" href="http://localhost:5173/">
+            play again <br />with +2 max Bullets!
+          </button>
+        </div>
+        <img
+          id="textTimeUp"
+          src="/kenney_shooting-gallery/PNG/HUD/text_timeup.png"
+        />
       </div>
     </div>
   </body>

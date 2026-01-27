@@ -51,5 +51,5 @@ camera movement a bit 2 strong
 json 
 more shooting feedback: screenshake, muzzle flash, bullet hud element ani(how?)
 
-next step: CTA, upload to netlify, loading screen, debug info FPS
+next step: CTA, upload to netlifyDONE, loading screen DONE, debug info FPS
 possible improvements: pool the ducks and not constantly spawn them, better performance
