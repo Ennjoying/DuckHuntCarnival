@@ -225,7 +225,7 @@ export default class AnimManager {
 
     gsap.to(rifle, {
       rotate: -35 + "deg",
-      duration: 1,
+      duration: 0.8,
       yoyo: true,
       repeat: 1,
       ease: "bounce.out",
@@ -238,8 +238,16 @@ export default class AnimManager {
     });
     gsap.to(cursor, {
       rotation: "-=" + 360 + "deg",
-      duration: 2,
-      ease: "power4.Out",
+      duration: 2.2,
+      ease: "elastic.inOut",
+    });
+    gsap.to(cursor, {
+      scale: 2,
+      duration: 0.7,
+      delay: 0.4,
+      yoyo: true,
+      repeat: 1,
+      ease: "power4.in",
     });
     //ifle.style.rotate = "5deg";
   }
