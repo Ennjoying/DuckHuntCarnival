@@ -1,9 +1,5 @@
 import gsap from "gsap";
-import SpawnManager from "./SpawnManager";
-import { rifle, cursorImg } from "./../scripts";
-import { ThreeMFLoader } from "three/examples/jsm/Addons.js";
-import { Vector3 } from "three";
-import { mx_bilerp_0 } from "three/src/nodes/materialx/lib/mx_noise.js";
+import { rifle, cursorImg, cursor } from "./../scripts";
 //animManager, just fire and forget animations
 
 export default class AnimManager {
@@ -121,6 +117,27 @@ export default class AnimManager {
       },
     );
   }
+
+  animPlusPoints(pointsObj) {
+    gsap.to(pointsObj.rotation, {
+      x: (Math.random() - 0.5) * Math.PI * 10,
+      y: (Math.random() - 0.5) * Math.PI * 10,
+      y: (Math.random() - 0.5) * Math.PI * 10,
+      duration: 2,
+      ease: "sine.inOut",
+    });
+    gsap.to(pointsObj.position, {
+      x: "+=" + (Math.random() - 0.5) * 10,
+      duration: 2,
+    });
+    gsap.to(pointsObj.position, {
+      y: "+=" + 2,
+      duration: 0.25,
+      onComplete: () => {
+        gsap.to(pointsObj.position, { y: -5, duration: 1, ease: "bounce" });
+      },
+    });
+  }
   //#region hud Anims
 
   animHudTutorialBegin(cursor, readyText) {
@@ -165,7 +182,7 @@ export default class AnimManager {
       duration: 0.5,
     });
   }
-  animHudShootRifle() {
+  animShootRifle(camera) {
     this.playRandomAudioWithPlaybackVariance(this.shotSounds, 0.3);
     gsap.to(rifle, {
       rotate: 35 + "deg",
@@ -174,10 +191,38 @@ export default class AnimManager {
       yoyo: true,
       repeat: 1,
     });
+    gsap.to(camera.rotation, {
+      duration: 0.075,
+      x: `+=${Math.random() * 0.1}`,
+
+      y: `+=${(Math.random() - 0.5) * 0.05}`,
+
+      z: `+=${(Math.random() - 0.5) * 0.05}`,
+      yoyo: true,
+      repeat: 1,
+      ease: "sine.inOut",
+    });
+
+    cursorImg.src = "/kenney_shooting-gallery/PNG/HUD/crosshair_red_large.png";
+    gsap.to(cursor, {
+      rotation: "+=" + 15 + "deg",
+      scale: 1.25,
+      yoyo: true,
+      duration: 0.075,
+      repeat: 1,
+      onComplete: () => {
+        if (!this.isReloading)
+          cursorImg.src =
+            "/kenney_shooting-gallery/PNG/HUD/crosshair_outline_large.png";
+      },
+    });
   }
+  isReloading = false;
   animHudReloadRifle(onCompleteFunc) {
+    this.isReloading = true;
     this.playRandomAudioWithPlaybackVariance(this.reloadSound, 0.3);
     cursorImg.src = "/kenney_shooting-gallery/PNG/HUD/crosshair_red_large.png";
+
     gsap.to(rifle, {
       rotate: -35 + "deg",
       duration: 1,
@@ -185,10 +230,16 @@ export default class AnimManager {
       repeat: 1,
       ease: "bounce.out",
       onComplete: () => {
+        this.isReloading = false;
         onCompleteFunc();
         cursorImg.src =
           "/kenney_shooting-gallery/PNG/HUD/crosshair_outline_large.png";
       },
+    });
+    gsap.to(cursor, {
+      rotation: "-=" + 360 + "deg",
+      duration: 2,
+      ease: "power4.Out",
     });
     //ifle.style.rotate = "5deg";
   }
@@ -397,22 +448,23 @@ export default class AnimManager {
     gsap.to(light, { angle: 0.4, duration: 1 });
   }
   swayLights(maxSway) {
-    for (let i = 0; i < this.lights.length; i++) {
-      let t = 0;
-      const neutralPos = this.lights[i].rotation.clone();
-      if (Math.random() >= 0.5)
-        gsap.ticker.add(() => {
-          t += gsap.ticker.deltaRatio() * 0.02;
-          this.lights[i].rotation.x = neutralPos.x - Math.sin(t) * maxSway;
-          this.lights[i].rotation.y = neutralPos.y + Math.cos(t) * maxSway;
-        });
-      else
-        gsap.ticker.add(() => {
-          t += gsap.ticker.deltaRatio() * 0.02;
-          this.lights[i].rotation.x = neutralPos.x + Math.sin(t) * maxSway;
-          this.lights[i].rotation.y = neutralPos.y - Math.cos(t) * maxSway;
-        });
-    }
+    this.lights.forEach((light) => {
+      const neutralPos = light.rotation.clone();
+
+      // Randomize direction (+/-) for variation
+      const xDir = Math.random() < 0.5 ? 1 : -1;
+      const yDir = Math.random() < 0.5 ? 1 : -1;
+
+      // Tween rotation continuously
+      gsap.to(light.rotation, {
+        x: "+=" + xDir * maxSway,
+        y: "+=" + yDir * maxSway,
+        duration: 3,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+      });
+    });
   }
 
   //#endregion

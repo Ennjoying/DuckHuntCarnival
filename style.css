@@ -20,8 +20,13 @@ canvas{
     width: 100%;
     height: 100%;
     font-family: Impact;
-    
     user-select: none;
+}
+.hud{
+    pointer-events: none;
+}
+img{
+    pointer-events: none;
 }
 #loadScreen{
     position: absolute;
@@ -41,9 +46,6 @@ canvas{
     transform: translate(-50%,-50%)
 }
 
-img{
-    pointer-events: none;
-}
 .score {
     position: absolute;
     display: flex;
@@ -121,17 +123,80 @@ img{
     padding-left:50px;
 }
 #continueBtn{
-    position: absolute;
-    background: rgb(153, 90, 19);
-    color: rgb(255, 228, 212);
-    border-radius: 10px;
+
+ clip-path: polygon(
+    1% 10%,
+    8% 2%,
+    18% 12%,
+    28% 3%,
+    40% 14%,
+    52% 4%,
+    64% 15%,
+    76% 5%,
+    88% 13%,
+    97% 6%,
+
+    96% 28%,
+    99% 45%,
+    95% 65%,
+
+    98% 90%,
+    90% 98%,
+    78% 86%,
+    66% 97%,
+    52% 85%,
+    38% 96%,
+    26% 84%,
+    14% 95%,
+    2% 88%,
+
+    3% 64%,
+    0% 45%,
+    4% 32%
+  );
+  
+    pointer-events: all;
+    background: rgb(153, 90, 19,0);
+    color: white;
+    border-radius: 30px;
     border-width: 0px;
-    border-color: rgb(153, 90, 19);
+    border-color: rgba(83, 49, 10, 0.493);
     border-style:solid;
-    padding: 10px;
-    font-family: fantasy;
-    font-size: 30px;
+    padding: 20px;
+    font-family:cursive;
+    font-weight:bolder;
+    font-size:25px;
+    text-shadow:
+    -2px  0   0 rgb(230, 133, 23),
+     2px  0   0 rgb(230, 133, 23),
+     0   -2px 0 rgb(230, 133, 23),
+     0    2px 0 rgb(230, 133, 23);
+
+    position: absolute;
     top: 170%;
     left: 50%;
     transform: translate(-50%,-50%);
+}
+#continueBtn:hover {
+  background-color: rgb(163, 97, 22);
+}
+#continueBtn:active{
+    
+  background-color: rgb(117, 70, 15);
+}
+#tutoText{
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    
+    color: white;
+    font-family:cursive;
+    font-weight:bolder;
+    font-size: 20px;
+    text-shadow:
+    -2px  0   0 rgb(230, 133, 23),
+     2px  0   0 rgb(230, 133, 23),
+     0   -2px 0 rgb(230, 133, 23),
+     0    2px 0 rgb(230, 133, 23);
 }

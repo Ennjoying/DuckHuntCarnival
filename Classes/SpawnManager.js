@@ -12,6 +12,7 @@ export default class SpawnManager {
   targetDucks = [];
   targetStands = [];
   hitDecals = [];
+  plusPointsMesh = null;
   constructor(animator, scene, gameManager) {
     this.animator = animator;
     this.scene = scene;
@@ -33,6 +34,13 @@ export default class SpawnManager {
         this.onCompleteHitTarget.bind(this),
       );
       target.hitReaction = null;
+
+      const pointsIndicator = this.instantiate(
+        this.plusPointsMesh,
+        tutorialDuck.position,
+        new THREE.Vector3(0.5, 0.5, 0.5),
+      );
+      this.animator.animPlusPoints(pointsIndicator);
 
       this.animator.playRandomAudioWithPlaybackVariance(
         this.animator.pointSounds,
@@ -68,7 +76,7 @@ export default class SpawnManager {
     position ? objCopy.position.copy(position) : null;
     scale ? objCopy.scale.copy(scale) : null;
     rotation ? objCopy.rotation.copy(rotation) : null;
-
+    if (objCopy.material) objCopy.material.depthWrite = true;
     this.scene.add(objCopy);
     return objCopy;
   }
@@ -88,6 +96,12 @@ export default class SpawnManager {
         this.animator.pointSounds,
         0.5,
       );
+      const pointsIndicator = this.instantiate(
+        this.plusPointsMesh,
+        objCopy.position,
+        new THREE.Vector3(0.5, 0.5, 0.5),
+      );
+      this.animator.animPlusPoints(pointsIndicator);
       this.spawnDecal(target, impactPoint);
     };
 
@@ -138,16 +152,23 @@ export default class SpawnManager {
   }
 
   spawnDecal(hitObject, impactPoint) {
-    //das gespawnte decal ist kinda stuck in der position, es ist vermutlich so
-    //weil die rotation des objs mit dem impact point nicht verrechnet wird.
-    //ich müsste vermutlich die position mit der negativen rota des objects verrechnen
-    // or something like that to fix it. Maybe there is an easier solution tho
+    //das gespawnte decal war falsch positioniert weil die Z axis falsch ist.
+    //somehow ist beim decal die local x axis die world z axis.
+    hitObject.worldToLocal(impactPoint);
     hitObject.add(
       this.hitDecals[Math.floor(Math.random() * this.hitDecals.length)].clone(),
     );
-    hitObject.worldToLocal(impactPoint);
-    hitObject.children.at(-1).position.set(impactPoint.x, impactPoint.y, +0.2);
+    hitObject.add(
+      this.hitDecals[Math.floor(Math.random() * this.hitDecals.length)].clone(),
+    );
+    hitObject.children.at(-2).rotation.set(0, 0, 0);
+    hitObject.children
+      .at(-2)
+      .position.set(impactPoint.x + 0.05, impactPoint.y, impactPoint.z);
     hitObject.children.at(-1).rotation.set(0, 0, 0);
+    hitObject.children
+      .at(-1)
+      .position.set(impactPoint.x - 0.05, impactPoint.y, impactPoint.z);
   }
 
   spawnTrees(tree1, tree2) {
@@ -156,7 +177,7 @@ export default class SpawnManager {
     const yFactor = 1.5 / loopMax;
     const yConst = -0.75;
     const zFactor = 1.5 / loopMax;
-    const zConst = -0.25;
+    const zConst = -0.4;
     for (let i = 0; i < loopMax; i++) {
       if (Math.random() > 0.5) {
         this.instantiateBgTarget(

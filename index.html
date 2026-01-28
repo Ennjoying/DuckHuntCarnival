@@ -70,6 +70,10 @@
             src="/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png"
           />
         </div>
+        <div id="tutoText">
+          you can click to shoot <br />
+          and press R to reload!
+        </div>
       </div>
       <div id="loadScreen">
         <div id="loadText">
@@ -81,7 +85,6 @@
           0%
         </div>
       </div>
-
       <div>
         <img
           class="readyText"
@@ -97,7 +100,12 @@
           <img id="endScoreNum3" />
         </div>
         <div>
-          <button id="continueBtn" href="http://localhost:5173/">
+          <!-- <button
+            id="continueBtn"
+            onclick="
+              window.location.href = 'https://duckhuntcarneval.netlify.app/'
+            "
+          > --><button id="continueBtn" onclick="location.reload()">
             play again <br />with +2 max Bullets!
           </button>
         </div>

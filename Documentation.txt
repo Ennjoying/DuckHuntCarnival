@@ -37,9 +37,8 @@ juice!
 
 
 Juice: 
-sounds: music, shoteffects, duckquack
 particle effects: konfetti when hitting duck
-more light effects: lights that focus the ducks 
+more light effects: lights that focus the ducks
 Remove the Trees and other Targets from the blender scene,
 add them in manually and give them hitReactions
 add clouds that fall down when shot (new gsap.to)

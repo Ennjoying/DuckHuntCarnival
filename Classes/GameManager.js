@@ -20,7 +20,10 @@ export default class GameManager {
       0.1,
       100,
     ); */
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
+      depth: true,
+    });
     this.animator = animator;
     this.tutorial = true;
   }
@@ -51,6 +54,7 @@ export default class GameManager {
     this.tutorial = false;
     this.animator.unfocusLights();
     this.animator.animHudTutorialEnd(tutorialCursor, readyText);
+    document.getElementById("tutoText").style.opacity = 0;
 
     this.timerRef = setInterval(() => {
       this.timeLeft--;

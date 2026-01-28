@@ -9,7 +9,7 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 //#region basic Projectsetup
 
 const mousePos = { x: 0, y: 0 };
-const cursor = document.querySelector("div.cursor");
+export const cursor = document.querySelector("div.cursor");
 export const rifle = document.querySelector("div.rifle");
 export const cursorImg = document.querySelector("img.cursorImg");
 let tree1 = null;
@@ -81,8 +81,8 @@ window.addEventListener("pointerdown", () => {
     !gameManager.gameEnded
   ) {
     shootCooldown = true;
-    animator.animHudShootRifle(rifle);
     gameManager.shootRifle();
+    animator.animShootRifle(gameManager.camera);
     if (gameManager.ammo >= 0) {
       //raycast
       rayCaster.setFromCamera(mousePos, gameManager.camera);
@@ -152,7 +152,7 @@ loadManager.onProgress = (url, currentLoading, totalToLoad) => {
       src="/kenney_shooting-gallery/PNG/HUD/icon_duck.png"
     />`;
   loadText.innerHTML = "Loading" + duckString + percent + "%";
-  /* let percent = Math.floor((currentLoading / totalToLoad) * 5);
+  /* let percent = Math.floor((currentLoading / tot alToLoad) * 5);
   
   loadText.innerHTML = "";
   for (let i = 0; i < percent; i++) {
@@ -233,6 +233,7 @@ gltfLoader.load("/models/MeshesToSpawn.gltf", (gltf) => {
   spawner.hitDecals.push(gltf.scene.getObjectByName("DecalHit006"));
   spawner.hitDecals.push(gltf.scene.getObjectByName("DecalHit007"));
   spawner.hitDecals.push(gltf.scene.getObjectByName("DecalHit008"));
+  spawner.plusPointsMesh = gltf.scene.getObjectByName("plusPoints001");
   //add Meshes
   gameManager.scene.add(spawner.wave1);
   gameManager.scene.add(spawner.wave2);
