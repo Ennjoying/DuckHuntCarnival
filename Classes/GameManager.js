@@ -11,7 +11,6 @@ export default class GameManager {
     this.aspectRatio = this.canvasSize.width / this.canvasSize.height;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(70, this.aspectRatio, 0.1, 100);
-
     /* this.camera = new THREE.OrthographicCamera(
       -3 * this.aspectRatio,
       3 * this.aspectRatio,
@@ -31,8 +30,11 @@ export default class GameManager {
   initGameScene() {
     this.camera.position.set(0, 0, 7);
     this.scene.add(this.camera);
+
     this.renderer.setSize(this.canvasSize.width, this.canvasSize.height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.shadowMap.autoUpdate = false;
+    this.renderer.shadowMap.needsUpdate = false;
 
     window.addEventListener("resize", () => {
       this.canvasSize.width = window.innerWidth;
@@ -50,9 +52,11 @@ export default class GameManager {
   timeLeft = 60;
 
   // #region start and end game
-  startGame() {
+  endTutorialStage() {
     this.tutorial = false;
     this.animator.unfocusLights();
+    this.animator.swayLights(0.4);
+    this.animator.animLightAngle(0.4);
     this.animator.animHudTutorialEnd(tutorialCursor, readyText);
     document.getElementById("tutoText").style.opacity = 0;
 

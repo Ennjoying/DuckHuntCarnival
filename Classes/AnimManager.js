@@ -429,9 +429,13 @@ export default class AnimManager {
       light.lookAt(target);
     });
   }
-  animLightAngle(angleFrom, angleTo) {
+  animLightAngle(angleTo) {
     this.lights.forEach((light) => {
-      gsap.fromTo(light, { angle: angleFrom }, { angle: angleTo, duration: 1 });
+      gsap.fromTo(
+        light,
+        { angle: light.angle },
+        { angle: angleTo, duration: 1 },
+      );
     });
   }
   animLightIntensity(lightIntensity) {
@@ -457,19 +461,16 @@ export default class AnimManager {
   }
   swayLights(maxSway) {
     this.lights.forEach((light) => {
-      const neutralPos = light.rotation.clone();
-
-      // Randomize direction (+/-) for variation
-      const xDir = Math.random() < 0.5 ? 1 : -1;
-      const yDir = Math.random() < 0.5 ? 1 : -1;
-
+      gsap.killTweensOf(light);
       // Tween rotation continuously
+      const lightRota = light.rotation;
       gsap.to(light.rotation, {
-        x: "+=" + xDir * maxSway,
-        y: "+=" + yDir * maxSway,
-        duration: 3,
-        ease: "sine.inOut",
+        x: () => lightRota.x + gsap.utils.random(-maxSway, maxSway),
+        y: () => lightRota.y + gsap.utils.random(-maxSway, maxSway),
         yoyo: true,
+        duration: Math.random() * 2 + 2,
+        ease: "sine.inOut",
+        repeatRefresh: true,
         repeat: -1,
       });
     });

@@ -12,12 +12,14 @@ export default class SpawnManager {
   targetDucks = [];
   targetStands = [];
   hitDecals = [];
+  baseLight = new THREE.AmbientLight("#ffffff", 0.1);
   plusPointsMesh = null;
   constructor(animator, scene, gameManager) {
     this.animator = animator;
     this.scene = scene;
     this.hittableObjects = [];
     this.gameManager = gameManager;
+    gameManager.scene.add(this.baseLight);
   }
 
   //#region tutorial animations
@@ -27,7 +29,7 @@ export default class SpawnManager {
       new THREE.Vector3(0, 0, 0.5),
     );
     tutorialDuck.children[0].hitReaction = (target, impactPoint) => {
-      this.gameManager.startGame();
+      this.gameManager.endTutorialStage();
       this.animator.animHitWithOnComplete(
         target,
         impactPoint,
@@ -73,6 +75,8 @@ export default class SpawnManager {
   // #region spawn objects
   instantiate(obj, position, scale, rotation) {
     const objCopy = obj.clone();
+    objCopy.castShadow = false;
+    //objCopy.receiveShadow = false;
     position ? objCopy.position.copy(position) : null;
     scale ? objCopy.scale.copy(scale) : null;
     rotation ? objCopy.rotation.copy(rotation) : null;
@@ -171,13 +175,81 @@ export default class SpawnManager {
       .position.set(impactPoint.x - 0.05, impactPoint.y, impactPoint.z);
   }
 
+  spawnTreesOptimized(tree1, tree2) {
+    //scrapping this idea, i dont know how to use the hitreaction property without restructuring the entire code
+    const loopMax = 20;
+    const treeInstance1 = new THREE.InstancedMesh(
+      tree1.geometry,
+      tree1.material,
+      loopMax,
+    );
+    const treeInstance2 = new THREE.InstancedMesh(
+      tree2.geometry,
+      tree2.material,
+      loopMax,
+    );
+
+    const xFactor = 10;
+    const yFactor = 1.5 / loopMax;
+    const yConst = -0.75;
+    const zFactor = 1.5 / loopMax;
+    const zConst = -0.4;
+
+    for (let i = 0; i < loopMax / 2; i++) {
+      const matrix = new THREE.Matrix4();
+      matrix.setPosition(
+        new THREE.Vector3(
+          Math.random() * xFactor - 1,
+          yConst + i * yFactor,
+          zConst - i * zFactor,
+        ),
+      );
+      treeInstance1.setMatrixAt(i, matrix);
+      matrix.setPosition(
+        new THREE.Vector3(
+          Math.random() * xFactor - xFactor + 1,
+          yConst + i * yFactor,
+          zConst - i * zFactor,
+        ),
+      );
+      treeInstance1.setMatrixAt(i + loopMax, matrix);
+    }
+    for (let i = 0; i < loopMax / 2; i++) {
+      const matrix = new THREE.Matrix4();
+      matrix.setPosition(
+        new THREE.Vector3(
+          Math.random() * xFactor - 1,
+          yConst + i * yFactor,
+          zConst - i * zFactor,
+        ),
+      );
+
+      treeInstance2.setMatrixAt(i, matrix);
+      matrix.setPosition(
+        new THREE.Vector3(
+          Math.random() * xFactor - xFactor + 1,
+          yConst + i * yFactor,
+          zConst - i * zFactor,
+        ),
+      );
+      treeInstance2.setMatrixAt(i + loopMax, matrix);
+    }
+    console.log(treeInstance1);
+    console.log(treeInstance2);
+    this.gameManager.scene.add(treeInstance1);
+    this.gameManager.scene.add(treeInstance2);
+  }
+
   spawnTrees(tree1, tree2) {
+    console.log(tree1);
+    console.log(tree2);
     const loopMax = 20;
     const xFactor = 10;
     const yFactor = 1.5 / loopMax;
     const yConst = -0.75;
     const zFactor = 1.5 / loopMax;
     const zConst = -0.4;
+
     for (let i = 0; i < loopMax; i++) {
       if (Math.random() > 0.5) {
         this.instantiateBgTarget(

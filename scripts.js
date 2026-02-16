@@ -5,6 +5,7 @@ import AnimManager from "./Classes/AnimManager.js";
 import GameManager from "./Classes/GameManager.js";
 import SpawnManager from "./Classes/SpawnManager.js";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
+import Stats from "stats.js";
 // #region Projectsetup, Inputs
 //#region basic Projectsetup
 
@@ -22,6 +23,9 @@ const animator = new AnimManager();
 const gameManager = new GameManager(animator);
 const spawner = new SpawnManager(animator, gameManager.scene, gameManager);
 gameManager.initGameScene();
+const stats = new Stats();
+stats.showPanel(0);
+document.body.appendChild(stats.dom);
 // #endregion
 
 // #region Inputs
@@ -170,14 +174,14 @@ const gltfLoader = new GLTFLoader(loadManager);
 
 gltfLoader.load("/models/sceneStall.gltf", (gltf) => {
   gameManager.scene.add(gltf.scene);
-  //console.log(gltf.scene);
+  console.log(gltf.scene);
   animator.lights.push(gltf.scene.getObjectByName("lightRight001"));
   animator.lights.push(gltf.scene.getObjectByName("lightRight002"));
-  animator.lights.push(gltf.scene.getObjectByName("lightRight003"));
+  //animator.lights.push(gltf.scene.getObjectByName("lightRight003"));
   animator.lights.push(gltf.scene.getObjectByName("lightRight004"));
   animator.lights.push(gltf.scene.getObjectByName("lightLeft001"));
   animator.lights.push(gltf.scene.getObjectByName("lightLeft002"));
-  animator.lights.push(gltf.scene.getObjectByName("lightLeft003"));
+  //animator.lights.push(gltf.scene.getObjectByName("lightLeft003"));
   animator.lights.push(gltf.scene.getObjectByName("lightLeft004"));
   animator.lightsNeutralPos.push(animator.lights[0].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[1].rotation.clone());
@@ -185,8 +189,8 @@ gltfLoader.load("/models/sceneStall.gltf", (gltf) => {
   animator.lightsNeutralPos.push(animator.lights[3].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[4].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[5].rotation.clone());
-  animator.lightsNeutralPos.push(animator.lights[6].rotation.clone());
-  animator.lightsNeutralPos.push(animator.lights[7].rotation.clone());
+  //animator.lightsNeutralPos.push(animator.lights[6].rotation.clone());
+  //animator.lightsNeutralPos.push(animator.lights[7].rotation.clone());
 });
 gltfLoader.load("/models/MeshesToSpawn.gltf", (gltf) => {
   //assign Meshes
@@ -283,13 +287,15 @@ function beginPlay() {
   const tutoDuck = spawner.instantiateTutorialDuck();
   animator.focusLightsOn(tutoDuck.position);
   animator.swayLights(0.1);
-  animator.animLightAngle(0.8, 0.2);
+  animator.animLightAngle(0.2);
   animator.animHudTutorialBegin(tutorialCursor, readyText);
   spawner.spawnTrees(tree1, tree2); //
   eventTick();
 }
 //#region event tick
 const eventTick = () => {
+  stats.begin();
+
   //set timevariables
   let elapsedTime = clock.getElapsedTime();
   //object updates
@@ -313,4 +319,6 @@ const eventTick = () => {
   elapsedTime > 100 ? (elapsedTime = 0) : null;
   gameManager.renderer.render(gameManager.scene, gameManager.camera);
   window.requestAnimationFrame(eventTick);
+
+  stats.end();
 };
