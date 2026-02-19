@@ -4,6 +4,9 @@ import { readyText, tutorialCursor } from "./../scripts";
 export default class GameManager {
   playerpoints = 0;
   tutorial = true;
+  timerRef = null;
+  timeLeft = 60;
+
   constructor(animator) {
     this.canvas = document.querySelector("canvas.viewport");
     this.canvasSize = { width: window.innerWidth, height: window.innerHeight };
@@ -67,9 +70,6 @@ export default class GameManager {
       console.log("appended");
     }
   }
-
-  timerRef = null;
-  timeLeft = 1;
 
   // #region start and end game
   endTutorialStage() {

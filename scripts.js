@@ -34,8 +34,10 @@ document.body.appendChild(stats.dom);
 
 const btn = document.getElementById("continueBtn");
 btn.addEventListener("click", () => {
-  window.location.href =
-    "www.duckhuntcarneval.netlify.app/?magSize=" + (gameManager.magSize + 2);
+  location.reload();
+  /* window.location.href =
+    "www.duckhuntcarneval.netlify.app/?magSize=" +
+    (gameManager.magSize + 2); */
 });
 
 // #region Inputs
@@ -189,17 +191,16 @@ gltfLoader.load("/models/sceneStall.gltf", (gltf) => {
   animator.lights.push(gltf.scene.getObjectByName("lightRight001"));
   animator.lights.push(gltf.scene.getObjectByName("lightRight002"));
   //animator.lights.push(gltf.scene.getObjectByName("lightRight003"));
-  animator.lights.push(gltf.scene.getObjectByName("lightRight004"));
+  animator.lights.push(gltf.scene.getObjectByName("lightmiddle001"));
   animator.lights.push(gltf.scene.getObjectByName("lightLeft001"));
   animator.lights.push(gltf.scene.getObjectByName("lightLeft002"));
   //animator.lights.push(gltf.scene.getObjectByName("lightLeft003"));
-  animator.lights.push(gltf.scene.getObjectByName("lightLeft004"));
+  //animator.lights.push(gltf.scene.getObjectByName("lightLeft004"));
   animator.lightsNeutralPos.push(animator.lights[0].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[1].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[2].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[3].rotation.clone());
   animator.lightsNeutralPos.push(animator.lights[4].rotation.clone());
-  animator.lightsNeutralPos.push(animator.lights[5].rotation.clone());
   //animator.lightsNeutralPos.push(animator.lights[6].rotation.clone());
   //animator.lightsNeutralPos.push(animator.lights[7].rotation.clone());
 });
