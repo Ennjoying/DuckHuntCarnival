@@ -32,6 +32,12 @@ stats.showPanel(0);
 document.body.appendChild(stats.dom);
 // #endregion
 
+const btn = document.getElementById("continueBtn");
+btn.addEventListener("click", () => {
+  window.location.href =
+    "www.duckhuntcarneval.netlify.app/?magSize=" + (gameManager.magSize + 2);
+});
+
 // #region Inputs
 
 //Move cursor
