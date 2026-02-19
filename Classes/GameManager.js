@@ -4,7 +4,6 @@ import { readyText, tutorialCursor } from "./../scripts";
 export default class GameManager {
   playerpoints = 0;
   tutorial = true;
-  ammo = 3;
   constructor(animator) {
     this.canvas = document.querySelector("canvas.viewport");
     this.canvasSize = { width: window.innerWidth, height: window.innerHeight };
@@ -27,6 +26,9 @@ export default class GameManager {
     this.tutorial = true;
   }
 
+  url = new URLSearchParams(window.location.search);
+  bulletContainer = document.getElementById("bullets");
+  bulletImgs = [];
   initGameScene() {
     this.camera.position.set(0, 0, 7);
     this.scene.add(this.camera);
@@ -36,6 +38,7 @@ export default class GameManager {
     this.renderer.shadowMap.autoUpdate = false;
     this.renderer.shadowMap.needsUpdate = false;
 
+    this.rect = this.renderer.domElement.getBoundingClientRect();
     window.addEventListener("resize", () => {
       this.canvasSize.width = window.innerWidth;
       this.canvasSize.height = window.innerHeight;
@@ -44,12 +47,29 @@ export default class GameManager {
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(this.canvasSize.width, this.canvasSize.height);
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      this.rect = this.renderer.domElement.getBoundingClientRect();
     });
     this.setTime();
+
+    //UI
+
+    this.magSize = this.url.get("magSize");
+    if (this.magSize == null && this.magSize < 3) this.magSize = 3;
+    this.ammo = this.magSize;
+    const img = document.createElement("img");
+    img.style.paddingLeft = "1vw";
+    console.log(this.magSize);
+    img.src = "/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png";
+    for (let i = 0; i < this.magSize; i++) {
+      let newBullet = img.cloneNode();
+      this.bulletContainer.appendChild(newBullet);
+      this.bulletImgs.push(newBullet);
+      console.log("appended");
+    }
   }
 
   timerRef = null;
-  timeLeft = 60;
+  timeLeft = 1;
 
   // #region start and end game
   endTutorialStage() {
@@ -85,30 +105,18 @@ export default class GameManager {
     this.displayEndScore();
   }
 
-  bullet1 = document.querySelector("img.bullet1");
-  bullet2 = document.querySelector("img.bullet2");
-  bullet3 = document.querySelector("img.bullet3");
-  // i wanted to do a blinking bullets animation, but cant get the bulletdiv.
-  //bulletDiv = document.querySelector(".bullets");
   shootRifle() {
-    switch (this.ammo) {
-      case 0:
-        break;
-      case 1:
-        this.bullet1.src =
-          "/kenney_shooting-gallery/PNG/HUD/icon_bullet_empty_short.png";
+    switch (this.ammo > 1) {
+      case true:
         this.ammo--;
+        this.bulletImgs[this.ammo].src =
+          "/kenney_shooting-gallery/PNG/HUD/icon_bullet_empty_short.png";
+        break;
+      case false:
+        this.ammo--;
+        this.bulletImgs[this.ammo].src =
+          "/kenney_shooting-gallery/PNG/HUD/icon_bullet_empty_short.png";
         this.reloadRifle();
-        break;
-      case 2:
-        this.bullet2.src =
-          "/kenney_shooting-gallery/PNG/HUD/icon_bullet_empty_short.png";
-        this.ammo--;
-        break;
-      case 3:
-        this.bullet3.src =
-          "/kenney_shooting-gallery/PNG/HUD/icon_bullet_empty_short.png";
-        this.ammo--;
         break;
     }
   }
@@ -120,14 +128,12 @@ export default class GameManager {
   }
   completedReload() {
     this.isReloading = false;
-    this.ammo = 3;
+    this.ammo = this.magSize;
 
-    this.bullet1.src =
-      "/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png";
-    this.bullet2.src =
-      "/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png";
-    this.bullet3.src =
-      "/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png";
+    this.bulletImgs.forEach((element) => {
+      element.src =
+        "/kenney_shooting-gallery/PNG/HUD/icon_bullet_gold_short.png";
+    });
   }
   scoreText = document.querySelector("div.scoreText");
   scoreNum1 = document.querySelector("img.scoreNum1");

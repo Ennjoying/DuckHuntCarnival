@@ -18,6 +18,10 @@ let tree2 = null;
 let cameraTarget = new THREE.Object3D();
 cameraTarget.position.z = -5;
 
+let frames = 0;
+let elapsedTime = 0;
+let fpsCheckChecks = 5;
+let fpsCheckTimer;
 const clock = new THREE.Clock();
 const animator = new AnimManager();
 const gameManager = new GameManager(animator);
@@ -30,22 +34,13 @@ document.body.appendChild(stats.dom);
 
 // #region Inputs
 
-//const inputs = new OrbitControls(gameManager.camera, gameManager.canvas);
-//inputs.minPolarAngle = Math.PI * 0.4
-//inputs.maxPolarAngle = Math.PI * 0.6
-//inputs.enableDamping = true
-//inputs.isLocked = true
-const body = window.addEventListener("mousemove", (event) => {
-  mousePos.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mousePos.y = 1 - (event.clientY / window.innerHeight) * 2;
+//Move cursor
+const body = window.addEventListener("pointermove", (event) => {
+  mousePos.x = (event.clientX / gameManager.canvasSize.width) * 2 - 1;
+  mousePos.y = 1 - (event.clientY / gameManager.canvasSize.height) * 2;
 
-  if (!initialClick) {
-    cameraTarget.position.x = mousePos.x / 2;
-    cameraTarget.position.y = mousePos.y / 2;
-    gameManager.camera.position.x = mousePos.x / 8;
-    gameManager.camera.position.y = mousePos.y / 8;
-  }
   if (!gameManager.gameEnded) {
+    //normal gameloop
     cameraTarget.position.x = mousePos.x / 2;
     cameraTarget.position.y = mousePos.y / 2;
     gameManager.camera.position.x = mousePos.x / 8;
@@ -56,6 +51,7 @@ const body = window.addEventListener("mousemove", (event) => {
     rifle.style.left = 1 + 50 * (mousePos.x + 1) + (mousePos.y + 0.7) * 5 + "%";
     rifle.style.top = 80 + 15 * -mousePos.y + "%";
   } else {
+    //endstage after timer expired
     cameraTarget.position.x = mousePos.x / 8;
     cameraTarget.position.y = mousePos.y / 8;
     gameManager.camera.position.x = mousePos.x / 32;
@@ -66,13 +62,15 @@ const body = window.addEventListener("mousemove", (event) => {
     rifle.style.top = 85 + "%";
     rifle.style.rotate = -45 + "deg";
   }
+
   gameManager.camera.lookAt(cameraTarget.position);
 });
 
+//Shoot
 const rayCaster = new THREE.Raycaster();
 let shootCooldown = false;
 let initialClick = true;
-window.addEventListener("pointerdown", () => {
+window.addEventListener("pointerdown", (event) => {
   if (initialClick) {
     initialClick = false;
     animator.playRandomAudioOnLoop(animator.streamSounds);
@@ -87,9 +85,29 @@ window.addEventListener("pointerdown", () => {
     shootCooldown = true;
     gameManager.shootRifle();
     animator.animShootRifle(gameManager.camera);
+
+    //copy from mousemove for mobile
+    cameraTarget.position.x = mousePos.x / 2;
+    cameraTarget.position.y = mousePos.y / 2;
+    gameManager.camera.position.x = mousePos.x / 8;
+    gameManager.camera.position.y = mousePos.y / 8;
+    cursor.style.left = event.clientX + "px";
+    cursor.style.top = event.clientY + "px";
+
+    rifle.style.left = 1 + 50 * (mousePos.x + 1) + (mousePos.y + 0.7) * 5 + "%";
+    rifle.style.top = 80 + 15 * -mousePos.y + "%";
+    //
+
     if (gameManager.ammo >= 0) {
       //raycast
-      rayCaster.setFromCamera(mousePos, gameManager.camera);
+
+      rayCaster.setFromCamera(
+        {
+          x: (event.clientX / gameManager.rect.width) * 2 - 1,
+          y: 1 - (event.clientY / gameManager.rect.height) * 2,
+        },
+        gameManager.camera,
+      );
       const intersectedObj = rayCaster.intersectObjects(
         gameManager.scene.children,
         true,
@@ -113,26 +131,13 @@ window.addEventListener("pointerdown", () => {
     }, 500);
   }
 });
+
+//reload on R
 window.addEventListener("keydown", () => {
   if (event.key == "r") {
-    if (gameManager.ammo < 3) gameManager.reloadRifle();
+    if (gameManager.ammo < gameManager.magSize) gameManager.reloadRifle();
   }
 });
-
-//on double click toggle fullscreen
-/* window.addEventListener("dblclick", () => {
-  const fullscreenElement =
-    document.fullscreenElement || document.webkitFullscreenElement;
-  if (fullscreenElement) {
-    //this syntax "?.()" is called optional chaining.
-    // it checks if the method is valid/exists before running the method
-    document.exitFullscreen?.();
-    document.webkitFullscreenElement?.();
-  } else {
-    canvas.requestFullscreen?.();
-    canvas.webkitFullscreenElement?.();
-  }
-}); */
 
 // #endregion
 // #endregion
@@ -174,7 +179,7 @@ const gltfLoader = new GLTFLoader(loadManager);
 
 gltfLoader.load("/models/sceneStall.gltf", (gltf) => {
   gameManager.scene.add(gltf.scene);
-  console.log(gltf.scene);
+  //console.log(gltf.scene);
   animator.lights.push(gltf.scene.getObjectByName("lightRight001"));
   animator.lights.push(gltf.scene.getObjectByName("lightRight002"));
   //animator.lights.push(gltf.scene.getObjectByName("lightRight003"));
@@ -289,15 +294,34 @@ function beginPlay() {
   animator.swayLights(0.1);
   animator.animLightAngle(0.2);
   animator.animHudTutorialBegin(tutorialCursor, readyText);
-  spawner.spawnTrees(tree1, tree2); //
+  spawner.spawnTrees(tree1, tree2);
+
+  //fps checker
+  fpsCheckTimer = setInterval(() => {
+    const avgFPS = frames / elapsedTime;
+    //console.log("fpsCheckTimer:", avgFPS.toFixed(2));
+    if (avgFPS < 50) {
+      fpsCheckChecks -= 1;
+      if (fpsCheckChecks == 0) {
+        console.log("Set low graphics mode");
+        gameManager.renderer.setPixelRatio(
+          Math.min(window.devicePixelRatio, 1),
+        );
+        if (fpsCheckTimer !== null) clearInterval(fpsCheckTimer);
+      }
+    }
+  }, 1000);
+
   eventTick();
 }
 //#region event tick
 const eventTick = () => {
   stats.begin();
 
-  //set timevariables
-  let elapsedTime = clock.getElapsedTime();
+  //fps checker
+  frames += 1;
+  elapsedTime = clock.getElapsedTime();
+
   //object updates
   //animate Waves
   spawner.wave1.position.set(

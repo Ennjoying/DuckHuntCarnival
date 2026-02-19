@@ -175,78 +175,11 @@ export default class SpawnManager {
       .position.set(impactPoint.x - 0.05, impactPoint.y, impactPoint.z);
   }
 
-  spawnTreesOptimized(tree1, tree2) {
-    //scrapping this idea, i dont know how to use the hitreaction property without restructuring the entire code
-    const loopMax = 20;
-    const treeInstance1 = new THREE.InstancedMesh(
-      tree1.geometry,
-      tree1.material,
-      loopMax,
-    );
-    const treeInstance2 = new THREE.InstancedMesh(
-      tree2.geometry,
-      tree2.material,
-      loopMax,
-    );
-
-    const xFactor = 10;
-    const yFactor = 1.5 / loopMax;
-    const yConst = -0.75;
-    const zFactor = 1.5 / loopMax;
-    const zConst = -0.4;
-
-    for (let i = 0; i < loopMax / 2; i++) {
-      const matrix = new THREE.Matrix4();
-      matrix.setPosition(
-        new THREE.Vector3(
-          Math.random() * xFactor - 1,
-          yConst + i * yFactor,
-          zConst - i * zFactor,
-        ),
-      );
-      treeInstance1.setMatrixAt(i, matrix);
-      matrix.setPosition(
-        new THREE.Vector3(
-          Math.random() * xFactor - xFactor + 1,
-          yConst + i * yFactor,
-          zConst - i * zFactor,
-        ),
-      );
-      treeInstance1.setMatrixAt(i + loopMax, matrix);
-    }
-    for (let i = 0; i < loopMax / 2; i++) {
-      const matrix = new THREE.Matrix4();
-      matrix.setPosition(
-        new THREE.Vector3(
-          Math.random() * xFactor - 1,
-          yConst + i * yFactor,
-          zConst - i * zFactor,
-        ),
-      );
-
-      treeInstance2.setMatrixAt(i, matrix);
-      matrix.setPosition(
-        new THREE.Vector3(
-          Math.random() * xFactor - xFactor + 1,
-          yConst + i * yFactor,
-          zConst - i * zFactor,
-        ),
-      );
-      treeInstance2.setMatrixAt(i + loopMax, matrix);
-    }
-    console.log(treeInstance1);
-    console.log(treeInstance2);
-    this.gameManager.scene.add(treeInstance1);
-    this.gameManager.scene.add(treeInstance2);
-  }
-
   spawnTrees(tree1, tree2) {
-    console.log(tree1);
-    console.log(tree2);
-    const loopMax = 20;
+    const loopMax = 10;
     const xFactor = 10;
-    const yFactor = 1.5 / loopMax;
-    const yConst = -0.75;
+    const yFactor = 0.75 / loopMax;
+    const yConst = -0.5;
     const zFactor = 1.5 / loopMax;
     const zConst = -0.4;
 
@@ -255,34 +188,54 @@ export default class SpawnManager {
         this.instantiateBgTarget(
           tree1,
           new THREE.Vector3(
-            Math.random() * xFactor - 1,
+            Math.random() * xFactor - xFactor / 2,
             yConst + i * yFactor,
             zConst - i * zFactor,
+          ),
+          new THREE.Vector3(
+            1,
+            Math.random() * 0.75 + 0.75,
+            Math.random() * 0.2 + 0.9,
           ),
         );
         this.instantiateBgTarget(
           tree1,
           new THREE.Vector3(
-            Math.random() * xFactor - xFactor + 1,
+            Math.random() * 2 * xFactor - xFactor,
             yConst + i * yFactor,
             zConst - i * zFactor,
+          ),
+          new THREE.Vector3(
+            1,
+            Math.random() * 0.75 + 0.75,
+            Math.random() * 0.2 + 0.9,
           ),
         );
       } else {
         this.instantiateBgTarget(
           tree2,
           new THREE.Vector3(
-            Math.random() * xFactor - 1,
+            Math.random() * xFactor - xFactor / 2,
             yConst + i * yFactor,
             zConst - i * zFactor,
+          ),
+          new THREE.Vector3(
+            1,
+            Math.random() * 0.75 + 0.75,
+            Math.random() * 0.2 + 0.9,
           ),
         );
         this.instantiateBgTarget(
           tree2,
           new THREE.Vector3(
-            Math.random() * xFactor - xFactor + 1,
+            Math.random() * 2 * xFactor - xFactor,
             yConst + i * yFactor,
             zConst - i * zFactor,
+          ),
+          new THREE.Vector3(
+            1,
+            Math.random() * 0.75 + 0.75,
+            Math.random() * 0.2 + 0.9,
           ),
         );
       }

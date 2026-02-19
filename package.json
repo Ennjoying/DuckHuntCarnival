@@ -5,6 +5,7 @@
   "main": "scripts.js",
   "scripts": {
     "dev": "vite",
+    "dev-host": "vite --host",
     "build": "vite build"
   },
   "keywords": [],
