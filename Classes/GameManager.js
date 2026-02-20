@@ -5,7 +5,7 @@ export default class GameManager {
   playerpoints = 0;
   tutorial = true;
   timerRef = null;
-  timeLeft = 60;
+  timeLeft = 1;
 
   constructor(animator) {
     this.canvas = document.querySelector("canvas.viewport");
@@ -43,6 +43,16 @@ export default class GameManager {
 
     this.rect = this.renderer.domElement.getBoundingClientRect();
     window.addEventListener("resize", () => {
+      this.canvasSize.width = window.innerWidth;
+      this.canvasSize.height = window.innerHeight;
+      this.aspectRatio = this.canvasSize.width / this.canvasSize.height;
+      this.camera.aspect = this.aspectRatio;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(this.canvasSize.width, this.canvasSize.height);
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      this.rect = this.renderer.domElement.getBoundingClientRect();
+    });
+    screen.addEventListener("change", () => {
       this.canvasSize.width = window.innerWidth;
       this.canvasSize.height = window.innerHeight;
       this.aspectRatio = this.canvasSize.width / this.canvasSize.height;

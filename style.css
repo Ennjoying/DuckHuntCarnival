@@ -58,7 +58,7 @@ img{
     position: absolute;
     display: flex;
     top: 4vh;
-    left: 6vw;
+    left: 4vw;
 }
 .duckIcon{
     padding-left: 15px;
@@ -68,7 +68,7 @@ img{
     position: absolute;
     display: flex;
     top: 4vh;
-    right: 8vw;
+    right: 5vw;
 }
 .cursor{
     position: absolute;
@@ -97,7 +97,7 @@ img{
 .bullets {
     position: absolute;
     right: 5vw;
-    bottom: 3vh;
+    bottom: 4vh;
 }
 
 .bullet {
@@ -111,60 +111,6 @@ img{
     transform: translate(-50%,-50%)
 }
 
-#textTimeUp{
-    position: absolute;
-    opacity: 0;
-
-
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-}
-
-#endScore{
-    position: absolute;
-    top: 120%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    color-scheme: light;
-}
-#endScoreNum1{
-    padding-left: 5vw;
-}
-#continueBtn{
-
-    pointer-events: all;
-    background: rgb(153, 90, 19,0);
-    color: white;
-    border-radius: 20px;
-    border-width: 3px;
-    border-color: rgba(83, 49, 10, 0.493);
-    border-style:solid;
-    padding: 15px 10px;
-    font-family:'Courier New', Courier, monospace;
-    letter-spacing: 2px;
-    
-
-    font-weight:bolder;
-    font-size:25px;
-    background-color: rgb(163, 97, 22);
-    text-shadow:
-    -2px  0   0 rgb(189, 109, 19),
-     2px  0   0 rgb(189, 109, 19),
-     0   -1.5px 0 rgb(189, 109, 19),
-     0    1.5px 0 rgb(189, 109, 19);
-    position: absolute;
-    top: 170%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-}
-#continueBtn:hover {
-  
-  background-color: rgb(219, 117, 0);
-}
-#continueBtn:active{
-  background-color: rgb(163, 97, 22);
-}
 #tutoText{
     position: absolute;
     top: 70%;
@@ -180,4 +126,61 @@ img{
      2px  0   0 rgb(189, 109, 19),
      0   -1.5px 0 rgb(189, 109, 19),
      0    1.5px 0 rgb(189, 109, 19);
+}
+
+#textTimeUp{
+    position: absolute;
+    opacity: 0;
+
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+#endScore{
+    position: absolute;
+    top: 40%;
+    left: -30%;
+    transform: translate(-50%,-50%);
+    color-scheme: light;
+}
+#endScoreNum1{
+    padding-left: 5vw;
+}
+#continueBtn{
+
+    position: absolute;
+    right: 30%;
+    bottom: -60%;
+    transform: translate(50%,50%);
+    pointer-events: all;
+
+    background: rgb(153, 90, 19,0);
+    color: white;
+    padding: 10px 10px;
+
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: rgba(83, 49, 10, 0.493);
+    border-style:solid;
+    font-family:'Courier New', Courier, monospace;
+    letter-spacing: 2px;
+    
+
+    font-weight:bolder;
+    font-size:20px;
+    background-color: rgb(163, 97, 22);
+    text-shadow:
+    -2px  0   0 rgb(189, 109, 19),
+     2px  0   0 rgb(189, 109, 19),
+     0   -1.5px 0 rgb(189, 109, 19),
+     0    1.5px 0 rgb(189, 109, 19);
+}
+#continueBtn:hover {
+  
+  background-color: rgb(219, 117, 0);
+}
+#continueBtn:active{
+  background-color: rgb(163, 97, 22);
 }

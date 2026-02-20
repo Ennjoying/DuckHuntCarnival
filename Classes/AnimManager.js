@@ -279,19 +279,33 @@ export default class AnimManager {
         duration: 1,
         onComplete: () => {
           gsap.to(textTimeUp, {
-            top: -5 + "%",
-            duration: 1.5,
+            top: -30 + "%",
+            duration: 1,
             ease: "elastic.in",
           });
           gsap.to(scoreText, {
+            left: 50 + "%",
             top: 20 + "%",
-            duration: 1.5,
-            ease: "elastic.in",
+            duration: 2,
+            ease: "sine.in",
           });
+          gsap.fromTo(
+            scoreText,
+            { rotation: -10 + "deg" },
+            {
+              rotation: 10 + "deg",
+              duration: 3,
+              delay: 1,
+              repeat: -1,
+              ease: "bounce.Out",
+              yoyo: true,
+            },
+          );
           gsap.to(replayButton, {
-            top: 70 + "%",
-            duration: 1.5,
-            ease: "elastic.in",
+            bottom: 20 + "%",
+            right: 50 + "%",
+            duration: 2,
+            ease: "sine.in",
             onComplete: () => {
               gsap.fromTo(
                 replayButton,
@@ -361,16 +375,6 @@ export default class AnimManager {
       });
     }
   }
-
-  /* 
-  animHudBlinkingBullets(bulletDiv) {
-    gsap.to(bulletDiv.style.opacity, {
-      opacity: 0,
-      duration: 0.5,
-      yoyo: true,
-      repeat: 3,
-    });
-  } */
 
   //#region sounds
   shotSounds = [

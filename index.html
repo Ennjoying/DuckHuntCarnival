@@ -4,7 +4,10 @@
     <link rel="stylesheet" href="./style.css" />
     <script type="module" src="./scripts.js"></script>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+    />
     <title>Duck Hunt Carnival</title>
   </head>
   <body>
@@ -79,11 +82,16 @@
       </div>
       <div id="endGame">
         <div id="endScore">
-          <img src="/kenney_shooting-gallery/PNG/HUD/text_score.png" />
-          <img src="/kenney_shooting-gallery/PNG/HUD/text_dots.png" />
-          <img id="endScoreNum1" />
-          <img id="endScoreNum2" />
-          <img id="endScoreNum3" />
+          <div>
+            <img src="/kenney_shooting-gallery/PNG/HUD/text_score.png" />
+            <img src="/kenney_shooting-gallery/PNG/HUD/text_dots.png" />
+          </div>
+          <br />
+          <div>
+            <img id="endScoreNum1" />
+            <img id="endScoreNum2" />
+            <img id="endScoreNum3" />
+          </div>
         </div>
         <div>
           <button id="continueBtn">
