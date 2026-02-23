@@ -65,7 +65,8 @@ export default class GameManager {
     this.setTime();
 
     this.timeLeft = this.url.get("time");
-    if (this.timeLeft == null) this.timeLeft = 30;
+    if (this.timeLeft == null) this.timeLeft = 60;
+    this.setTime();
 
     //UI
 
