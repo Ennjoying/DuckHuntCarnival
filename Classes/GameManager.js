@@ -5,7 +5,7 @@ export default class GameManager {
   playerpoints = 0;
   tutorial = true;
   timerRef = null;
-  timeLeft = 1;
+  timeLeft = 60;
 
   constructor(animator) {
     this.canvas = document.querySelector("canvas.viewport");
@@ -63,6 +63,9 @@ export default class GameManager {
       this.rect = this.renderer.domElement.getBoundingClientRect();
     });
     this.setTime();
+
+    this.timeLeft = this.url.get("time");
+    if (this.timeLeft == null) this.timeLeft = 30;
 
     //UI
 
